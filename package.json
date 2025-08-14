@@ -9,7 +9,11 @@
     "@babel/plugin-transform-optional-catch-binding": "^7.27.1",
     "@babel/plugin-transform-optional-chaining": "^7.27.1",
     "@npmcli/fs": "^4.0.0",
+    "@react-native-community/voice": "^1.1.9",
     "@react-native/babel-preset": "^0.81.0",
-    "lru-cache": "^11.1.0"
+    "@react-navigation/native": "^7.1.17",
+    "axios": "^1.11.0",
+    "lru-cache": "^11.1.0",
+    "react-native-audio": "^4.3.0"
   }
 }

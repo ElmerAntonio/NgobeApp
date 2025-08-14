@@ -1,0 +1,1 @@
+# Pantallas completas de la app (ej. Home, Login, Perfil)
