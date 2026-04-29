@@ -1,4 +1,7 @@
 {
+  "name": "NgobeApp",
+  "version": "1.0.0",
+  "scripts": {},
   "dependencies": {
     "@anthropic-ai/sdk": "^0.91.1",
     "@babel/plugin-transform-async-generator-functions": "^7.28.0",
@@ -27,8 +30,5 @@
     "react-native-screens": "~4.23.0",
     "react-native-url-polyfill": "^3.0.0",
     "react-native-vector-icons": "^10.3.0"
-  },
-  "name": "NgobeApp",
-  "version": "1.0.0",
-  "scripts": {}
+  }
 }
