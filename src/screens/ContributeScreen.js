@@ -1,23 +1,122 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
+import { Audio } from 'expo-av';
 import { theme } from '../utils/theme';
+import { supabase } from '../services/supabaseClient';
 
 export default function ContributeScreen() {
-  const [category, setCategory] = useState('word'); // word, phrase, story, song
+  const [category, setCategory] = useState('Palabra');
   const [ngobeText, setNgobeText] = useState('');
   const [spanishText, setSpanishText] = useState('');
   const [region, setRegion] = useState('General');
+  const [loading, setLoading] = useState(false);
+  
+  const [recording, setRecording] = useState(null);
+  const [recordings, setRecordings] = useState({ lento: null, rapido: null });
 
-  const handleRecordAudio = (speed) => {
-    // Aquí iría la integración con react-native-audio
-    alert(`Iniciando grabación ${speed}...`);
+  useEffect(() => {
+    return () => {
+      if (recording) {
+        recording.stopAndUnloadAsync();
+      }
+    };
+  }, []);
+
+  async function startRecording(type) {
+    try {
+      const permission = await Audio.requestPermissionsAsync();
+      if (permission.status === 'granted') {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: true,
+          playsInSilentModeIOS: true,
+        });
+
+        const { recording } = await Audio.Recording.createAsync(
+          Audio.RecordingOptionsPresets.HIGH_QUALITY
+        );
+        setRecording({ instance: recording, type });
+      } else {
+        Alert.alert('Permiso denegado', 'Necesitamos acceso al micrófono para grabar.');
+      }
+    } catch (err) {
+      console.error('Error al iniciar grabación', err);
+    }
+  }
+
+  async function stopRecording() {
+    if (!recording) return;
+    
+    try {
+      await recording.instance.stopAndUnloadAsync();
+      const uri = recording.instance.getURI();
+      setRecordings(prev => ({ ...prev, [recording.type]: uri }));
+      setRecording(null);
+    } catch (error) {
+      console.error('Error al detener grabación', error);
+    }
+  }
+
+  const uploadAudio = async (uri, fileName) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    const arrayBuffer = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsArrayBuffer(blob);
+    });
+
+    const { data, error } = await supabase.storage
+      .from('audios')
+      .upload(`contributions/${fileName}`, arrayBuffer, {
+        contentType: 'audio/m4a',
+      });
+
+    if (error) throw error;
+    return data.path;
   };
 
-  const handleSubmit = () => {
-    // Aquí iría la subida a Supabase
-    alert('Aporte guardado exitosamente');
-    setNgobeText('');
-    setSpanishText('');
+  const handleSubmit = async () => {
+    if (!ngobeText || !spanishText) {
+      Alert.alert('Faltan datos', 'Por favor completa los campos de texto.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      let audioLentoPath = null;
+      let audioRapidoPath = null;
+
+      const timestamp = Date.now();
+      if (recordings.lento) {
+        audioLentoPath = await uploadAudio(recordings.lento, `lento_${timestamp}.m4a`);
+      }
+      if (recordings.rapido) {
+        audioRapidoPath = await uploadAudio(recordings.rapido, `rapido_${timestamp}.m4a`);
+      }
+
+      const { error } = await supabase.from('contributions').insert([
+        {
+          category,
+          ngobe_text: ngobeText,
+          spanish_text: spanishText,
+          region,
+          audio_lento_url: audioLentoPath,
+          audio_rapido_url: audioRapidoPath,
+          status: 'pending'
+        },
+      ]);
+
+      if (error) throw error;
+
+      Alert.alert('¡Éxito!', 'Tu aporte ha sido enviado para revisión.');
+      setNgobeText('');
+      setSpanishText('');
+      setRecordings({ lento: null, rapido: null });
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -25,15 +124,19 @@ export default function ContributeScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.headerTitle}>Nuevo Aporte</Text>
         <Text style={styles.description}>
-          Comparte tu conocimiento. Si vas a grabar un audio, asegúrate de estar en un lugar silencioso.
+          Comparte tu conocimiento. El audio ayudará a entrenar la IA para reconocer el Ngäbere.
         </Text>
 
         <View style={styles.card}>
           <Text style={styles.label}>Categoría</Text>
           <View style={styles.categoryRow}>
-            {['Palabra', 'Frase', 'Cuento', 'Canción'].map((cat, idx) => (
-              <TouchableOpacity key={idx} style={[styles.catBtn, idx === 0 && styles.catBtnActive]}>
-                <Text style={[styles.catBtnText, idx === 0 && styles.catBtnTextActive]}>{cat}</Text>
+            {['Palabra', 'Frase', 'Cuento', 'Canción'].map((cat) => (
+              <TouchableOpacity 
+                key={cat} 
+                onPress={() => setCategory(cat)}
+                style={[styles.catBtn, category === cat && styles.catBtnActive]}
+              >
+                <Text style={[styles.catBtnText, category === cat && styles.catBtnTextActive]}>{cat}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -68,16 +171,33 @@ export default function ContributeScreen() {
 
           <Text style={styles.label}>Audios para IA</Text>
           <View style={styles.audioContainer}>
-            <TouchableOpacity style={styles.audioBtn} onPress={() => handleRecordAudio('lento')}>
-              <Text style={styles.audioBtnText}>🎙️ Grabar Lento</Text>
+            <TouchableOpacity 
+              style={[styles.audioBtn, recording?.type === 'lento' && styles.recordingActive]} 
+              onPressIn={() => startRecording('lento')}
+              onPressOut={stopRecording}
+            >
+              <Text style={styles.audioBtnText}>
+                {recordings.lento ? '✅ Lento Grabado' : '🎙️ Mantén para Lento'}
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.audioBtn} onPress={() => handleRecordAudio('rapido')}>
-              <Text style={styles.audioBtnText}>🎙️ Grabar Rápido (Natural)</Text>
+            
+            <TouchableOpacity 
+              style={[styles.audioBtn, recording?.type === 'rapido' && styles.recordingActive]} 
+              onPressIn={() => startRecording('rapido')}
+              onPressOut={stopRecording}
+            >
+              <Text style={styles.audioBtnText}>
+                {recordings.rapido ? '✅ Rápido Grabado' : '🎙️ Mantén para Natural'}
+              </Text>
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit}>
-            <Text style={styles.submitBtnText}>Subir Aporte</Text>
+          <TouchableOpacity 
+            style={[styles.submitBtn, loading && { opacity: 0.7 }]} 
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? <ActivityIndicator color="#000" /> : <Text style={styles.submitBtnText}>Subir Aporte</Text>}
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -167,10 +287,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.primary,
   },
+  recordingActive: {
+    backgroundColor: '#FFEBEE',
+    borderColor: '#D32F2F',
+  },
   audioBtnText: {
     color: theme.colors.primary,
     fontWeight: '600',
-    fontSize: 12,
+    fontSize: 11,
+    textAlign: 'center'
   },
   submitBtn: {
     backgroundColor: theme.colors.accent,
