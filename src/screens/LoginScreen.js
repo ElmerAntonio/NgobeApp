@@ -1,15 +1,51 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform } from 'react-native';
-import { theme } from '../utils/theme';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import { supabase } from "../services/supabaseClient";
+import { theme } from "../utils/theme";
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLogin, setIsLogin] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    // Aquí iría la lógica de autenticación con Supabase
-    // Por ahora, navegamos directo a Main
-    navigation.replace('Main');
+  const handleAuth = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "Por favor ingresa correo y contraseña.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        navigation.replace("Main");
+      } else {
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+        // Asumiendo que la confirmación de email está desactivada, el usuario ya debería estar logueado.
+        navigation.replace("Main");
+      }
+    } catch (error) {
+      Alert.alert("Error de Autenticación", error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -43,13 +79,37 @@ export default function LoginScreen({ navigation }) {
             secureTextEntry
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleLogin}>
-            <Text style={styles.buttonText}>Ingresar</Text>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={handleAuth}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator color={theme.colors.surface} />
+            ) : (
+              <Text style={styles.buttonText}>
+                {isLogin ? "Ingresar" : "Registrarse"}
+              </Text>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.toggleButton}
+            onPress={() => setIsLogin(!isLogin)}
+            disabled={isLoading}
+          >
+            <Text style={styles.toggleButtonText}>
+              {isLogin
+                ? "¿No tienes cuenta? Regístrate"
+                : "¿Ya tienes cuenta? Ingresa"}
+            </Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.footerContainer}>
-           <Text style={styles.footerText}>Acceso exclusivo para maestros y superadmin</Text>
+          <Text style={styles.footerText}>
+            Acceso exclusivo para maestros y superadmin
+          </Text>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -63,11 +123,11 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: "center",
     padding: theme.spacing.xl,
   },
   headerContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: theme.spacing.xxl,
   },
   title: {
@@ -79,13 +139,13 @@ const styles = StyleSheet.create({
   subtitle: {
     ...theme.typography.body,
     color: theme.colors.secondary,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   formContainer: {
     backgroundColor: theme.colors.surface,
     padding: theme.spacing.l,
     borderRadius: theme.borders.radiusLarge,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -94,7 +154,7 @@ const styles = StyleSheet.create({
   label: {
     ...theme.typography.caption,
     marginBottom: theme.spacing.xs,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   input: {
     height: 50,
@@ -103,27 +163,36 @@ const styles = StyleSheet.create({
     borderRadius: theme.borders.radius,
     paddingHorizontal: theme.spacing.m,
     marginBottom: theme.spacing.m,
-    backgroundColor: '#FAFAFA',
+    backgroundColor: "#FAFAFA",
   },
   button: {
     backgroundColor: theme.colors.primary,
     height: 50,
     borderRadius: theme.borders.radius,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: theme.spacing.s,
   },
   buttonText: {
     color: theme.colors.surface,
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   footerContainer: {
     marginTop: theme.spacing.xl,
-    alignItems: 'center',
+    alignItems: "center",
   },
   footerText: {
     ...theme.typography.caption,
-    textAlign: 'center',
-  }
+    textAlign: "center",
+  },
+  toggleButton: {
+    marginTop: theme.spacing.m,
+    alignItems: "center",
+  },
+  toggleButtonText: {
+    color: theme.colors.primary,
+    ...theme.typography.caption,
+    fontWeight: "600",
+  },
 });
