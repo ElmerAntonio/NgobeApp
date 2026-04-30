@@ -5,3 +5,4 @@
 - [x] Creación del esquema SQL con Row Level Security (RLS).
 - [x] Configuración de seguridad (.env y .gitignore).
 - [x] Configuración del cliente de Supabase en JS.
+- [x] Autenticación/Login con Supabase.
