@@ -27,10 +27,6 @@ CREATE POLICY "Allow authenticated insert" ON contributions
 INSERT INTO storage.buckets (id, name, public) VALUES ('audios', 'audios', true) ON CONFLICT DO NOTHING;
 
 -- RLS policies for storage bucket
-CREATE POLICY "Allow public access to audios" ON storage.objects
-    FOR SELECT
-    USING (bucket_id = 'audios');
-
 CREATE POLICY "Allow authenticated insert to audios" ON storage.objects
     FOR INSERT
     WITH CHECK (bucket_id = 'audios' AND auth.role() = 'authenticated');
