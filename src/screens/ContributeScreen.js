@@ -3,6 +3,7 @@ import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, SafeAr
 import { Audio } from 'expo-av';
 import { theme } from '../utils/theme';
 import { supabase } from '../services/supabaseClient';
+import { CONTRIBUTION_CATEGORIES, validateContribution } from '../utils/validation';
 
 export default function ContributeScreen() {
   const [category, setCategory] = useState('Palabra');
@@ -23,6 +24,8 @@ export default function ContributeScreen() {
   }, []);
 
   async function startRecording(type) {
+    if (recording) return;
+
     try {
       const permission = await Audio.requestPermissionsAsync();
       if (permission.status === 'granted') {
@@ -76,8 +79,16 @@ export default function ContributeScreen() {
   };
 
   const handleSubmit = async () => {
-    if (!ngobeText || !spanishText) {
-      Alert.alert('Faltan datos', 'Por favor completa los campos de texto.');
+    const validation = validateContribution({
+      category,
+      ngobeText,
+      spanishText,
+      region,
+      recordings,
+    });
+
+    if (!validation.isValid) {
+      Alert.alert(validation.title, validation.message);
       return;
     }
 
@@ -130,11 +141,14 @@ export default function ContributeScreen() {
         <View style={styles.card}>
           <Text style={styles.label}>Categoría</Text>
           <View style={styles.categoryRow}>
-            {['Palabra', 'Frase', 'Cuento', 'Canción'].map((cat) => (
+            {CONTRIBUTION_CATEGORIES.map((cat) => (
               <TouchableOpacity 
                 key={cat} 
                 onPress={() => setCategory(cat)}
                 style={[styles.catBtn, category === cat && styles.catBtnActive]}
+                accessibilityRole="button"
+                accessibilityState={{ selected: category === cat }}
+                accessibilityLabel={`Categoría ${cat}`}
               >
                 <Text style={[styles.catBtnText, category === cat && styles.catBtnTextActive]}>{cat}</Text>
               </TouchableOpacity>
@@ -147,6 +161,7 @@ export default function ContributeScreen() {
             value={region}
             onChangeText={setRegion}
             placeholder="Ej. Ñö Kribo, Nedrini..."
+            accessibilityLabel="Región o dialecto"
           />
 
           <Text style={styles.label}>Texto en Ngäbe</Text>
@@ -157,6 +172,7 @@ export default function ContributeScreen() {
             placeholder="Escribe cómo se dice..."
             multiline
             numberOfLines={3}
+            accessibilityLabel="Texto en Ngäbe"
           />
 
           <Text style={styles.label}>Traducción al Español</Text>
@@ -167,6 +183,7 @@ export default function ContributeScreen() {
             placeholder="Significado exacto..."
             multiline
             numberOfLines={3}
+            accessibilityLabel="Traducción al Español"
           />
 
           <Text style={styles.label}>Audios para IA</Text>
@@ -175,6 +192,8 @@ export default function ContributeScreen() {
               style={[styles.audioBtn, recording?.type === 'lento' && styles.recordingActive]} 
               onPressIn={() => startRecording('lento')}
               onPressOut={stopRecording}
+              accessibilityRole="button"
+              accessibilityLabel="Mantener presionado para grabar audio lento"
             >
               <Text style={styles.audioBtnText}>
                 {recordings.lento ? '✅ Lento Grabado' : '🎙️ Mantén para Lento'}
@@ -185,6 +204,8 @@ export default function ContributeScreen() {
               style={[styles.audioBtn, recording?.type === 'rapido' && styles.recordingActive]} 
               onPressIn={() => startRecording('rapido')}
               onPressOut={stopRecording}
+              accessibilityRole="button"
+              accessibilityLabel="Mantener presionado para grabar audio natural"
             >
               <Text style={styles.audioBtnText}>
                 {recordings.rapido ? '✅ Rápido Grabado' : '🎙️ Mantén para Natural'}
@@ -196,6 +217,8 @@ export default function ContributeScreen() {
             style={[styles.submitBtn, loading && { opacity: 0.7 }]} 
             onPress={handleSubmit}
             disabled={loading}
+            accessibilityRole="button"
+            accessibilityLabel="Subir aporte"
           >
             {loading ? <ActivityIndicator color="#000" /> : <Text style={styles.submitBtnText}>Subir Aporte</Text>}
           </TouchableOpacity>

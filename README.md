@@ -24,7 +24,17 @@ La interfaz de usuario ha sido concebida con un profundo respeto por la identida
 ## 📜 Legal y Privacidad
 Este proyecto es de código abierto, pero está protegido bajo la licencia **GNU GPL v3** para garantizar que siempre se mantenga libre y en beneficio de la comunidad. Cumple con la **Ley 81 de Protección de Datos Personales de Panamá** y se guía por las buenas prácticas y normativas ISO.
 
-## 🚀 Instalación y Uso
+## 🚀 Instalación, Uso y Pruebas
 1. Clona el repositorio.
-2. Instala las dependencias: `npm install`
-3. Ejecuta la app: `npm run android` o `npm run ios`
+2. Copia `.env.example` a `.env` y completa `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
+3. Instala las dependencias: `npm install`
+4. Inicia Expo: `npm run start`
+5. Abre la app con Expo Go, o ejecuta en dispositivo/emulador con `npm run android` o `npm run ios`.
+6. Ejecuta la batería local de pruebas: `npm run test:mass`
+
+## 🧪 Qué valida la batería actual
+- Validaciones de login, registro, consentimiento y aportes.
+- Estructura mínima del proyecto y scripts de uso.
+- Auditoría estática de accesibilidad, variables de entorno y archivos residuales.
+- Reglas base de seguridad en Supabase: RLS, ownership por usuario y bucket de audios privado.
+- `npm audit` para confirmar vulnerabilidades conocidas en dependencias.
