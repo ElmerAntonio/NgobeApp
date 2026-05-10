@@ -4,7 +4,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Screens (to be created)
 import LoginScreen from '../screens/LoginScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import ContributeScreen from '../screens/ContributeScreen';
@@ -16,7 +15,7 @@ import { theme } from '../utils/theme';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// Módulo principal con Tabs
+// Módulo principal con tabs
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -44,13 +43,11 @@ function MainTabs() {
   );
 }
 
-// Navegador raíz (maneja el login y luego muestra los tabs)
+// Navegador raíz: login y experiencia principal.
 export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {/* Aquí la lógica de Auth decidirá qué mostrar.
-            Por ahora, empezamos con el Login. */}
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Main" component={MainTabs} />
       </Stack.Navigator>

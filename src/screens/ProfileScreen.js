@@ -1,10 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Alert } from 'react-native';
 import { theme } from '../utils/theme';
+import { supabase } from '../services/supabaseClient';
 
 export default function ProfileScreen({ navigation }) {
-  const handleLogout = () => {
-    // Aquí iría el signout de Supabase
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      Alert.alert('Error', error.message);
+      return;
+    }
     navigation.replace('Login');
   };
 
@@ -19,26 +24,47 @@ export default function ProfileScreen({ navigation }) {
       </View>
 
       <View style={styles.menuContainer}>
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          accessibilityRole="button"
+          accessibilityLabel="Ver mis aportes"
+        >
           <Text style={styles.menuText}>Mis Aportes</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuItem}>
+        <TouchableOpacity
+          style={styles.menuItem}
+          accessibilityRole="button"
+          accessibilityLabel="Configurar audio"
+        >
           <Text style={styles.menuText}>Configuración de Audio</Text>
         </TouchableOpacity>
 
         {/* Esta sección sería solo visible si el role === 'superadmin' */}
         <View style={styles.adminSection}>
           <Text style={styles.adminTitle}>Superadmin Panel</Text>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            accessibilityRole="button"
+            accessibilityLabel="Aprobar usuarios nuevos"
+          >
             <Text style={styles.menuText}>Aprobar Usuarios Nuevos</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            accessibilityRole="button"
+            accessibilityLabel="Revisar calidad de datos para IA"
+          >
             <Text style={styles.menuText}>Revisar Calidad de Datos (IA)</Text>
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={[styles.menuItem, styles.logoutBtn]} onPress={handleLogout}>
+        <TouchableOpacity
+          style={[styles.menuItem, styles.logoutBtn]}
+          onPress={handleLogout}
+          accessibilityRole="button"
+          accessibilityLabel="Cerrar sesión"
+        >
           <Text style={styles.logoutText}>Cerrar Sesión</Text>
         </TouchableOpacity>
       </View>

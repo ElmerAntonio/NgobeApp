@@ -13,16 +13,25 @@ import {
 } from "react-native";
 import { supabase } from "../services/supabaseClient";
 import { theme } from "../utils/theme";
+import { validateAuthForm } from "../utils/validation";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const handleAuth = async () => {
-    if (!email || !password) {
-      Alert.alert("Error", "Por favor ingresa correo y contraseña.");
+    const validation = validateAuthForm({
+      email,
+      password,
+      isLogin,
+      acceptedTerms,
+    });
+
+    if (!validation.isValid) {
+      Alert.alert(validation.title, validation.message);
       return;
     }
 
@@ -48,6 +57,14 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  const handleToggleMode = () => {
+    const nextIsLogin = !isLogin;
+    setIsLogin(nextIsLogin);
+    if (nextIsLogin) {
+      setAcceptedTerms(false);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -68,6 +85,7 @@ export default function LoginScreen({ navigation }) {
             onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
+            accessibilityLabel="Correo electrónico"
           />
 
           <Text style={styles.label}>Contraseña</Text>
@@ -77,12 +95,38 @@ export default function LoginScreen({ navigation }) {
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+            accessibilityLabel="Contraseña"
           />
+
+          {!isLogin && (
+            <TouchableOpacity
+              style={styles.consentRow}
+              onPress={() => setAcceptedTerms(!acceptedTerms)}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: acceptedTerms }}
+              accessibilityLabel="Aceptar política de privacidad y términos de uso"
+            >
+              <View
+                style={[
+                  styles.checkbox,
+                  acceptedTerms && styles.checkboxChecked,
+                ]}
+              >
+                {acceptedTerms && <Text style={styles.checkboxMark}>✓</Text>}
+              </View>
+              <Text style={styles.consentText}>
+                Acepto la política de privacidad y los términos de uso antes de
+                aportar datos o audios.
+              </Text>
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity
             style={styles.button}
             onPress={handleAuth}
             disabled={isLoading}
+            accessibilityRole="button"
+            accessibilityLabel={isLogin ? "Ingresar" : "Registrarse"}
           >
             {isLoading ? (
               <ActivityIndicator color={theme.colors.surface} />
@@ -95,8 +139,10 @@ export default function LoginScreen({ navigation }) {
 
           <TouchableOpacity
             style={styles.toggleButton}
-            onPress={() => setIsLogin(!isLogin)}
+            onPress={handleToggleMode}
             disabled={isLoading}
+            accessibilityRole="button"
+            accessibilityLabel={isLogin ? "Cambiar a registro" : "Cambiar a ingreso"}
           >
             <Text style={styles.toggleButtonText}>
               {isLogin
@@ -194,5 +240,33 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     ...theme.typography.caption,
     fontWeight: "600",
+  },
+  consentRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: theme.spacing.m,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: theme.spacing.s,
+    marginTop: 2,
+  },
+  checkboxChecked: {
+    backgroundColor: theme.colors.primary,
+  },
+  checkboxMark: {
+    color: theme.colors.surface,
+    fontWeight: "bold",
+  },
+  consentText: {
+    ...theme.typography.caption,
+    flex: 1,
+    color: theme.colors.textPrimary,
   },
 });
