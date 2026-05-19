@@ -6,6 +6,7 @@ const cors = require("cors");
 
 // Importar rutas
 const aiRoutes = require("./routes/ai");
+const userRoutes = require("./routes/users");
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use(express.json());
 
 // Montar rutas
 app.use("/api", aiRoutes);
+app.use("/api/users/account", userRoutes);
 
 // Manejo de rutas no encontradas (404)
 app.use((req, res) => {
