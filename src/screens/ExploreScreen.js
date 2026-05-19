@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   View,
   Text,
@@ -16,12 +10,12 @@ import {
   ActivityIndicator,
   Animated,
   ScrollView,
-} from "react-native";
-import { Audio } from "expo-av";
-import { supabase } from "../services/supabaseClient";
-import { theme } from "../utils/theme";
+} from 'react-native';
+import { Audio } from 'expo-av';
+import { supabase } from '../services/supabaseClient';
+import { theme } from '../utils/theme';
 
-const CATEGORIES = ["Todas", "Palabra", "Frase", "Cuento", "Canción"];
+const CATEGORIES = ['Todas', 'Palabra', 'Frase', 'Cuento', 'Canción'];
 const INITIAL_LIMIT = 20;
 const LOAD_MORE_LIMIT = 10;
 
@@ -42,13 +36,13 @@ const SkeletonCard = () => {
           duration: 1000,
           useNativeDriver: false,
         }),
-      ]),
+      ])
     ).start();
   }, [shimmerValue]);
 
   const backgroundColor = shimmerValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ["#E0E0E0", "#F5F5F5"],
+    outputRange: ['#E0E0E0', '#F5F5F5'],
   });
 
   return (
@@ -64,34 +58,32 @@ const SkeletonCard = () => {
 };
 
 // Componente de Tarjeta Memoizado
-const ContributionCard = React.memo(
-  ({ item, isPlaying, isLoadingAudio, onPlayAudio }) => {
-    return (
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.typeTag}>{item.category}</Text>
-          <Text style={styles.regionTag}>{item.region}</Text>
-        </View>
-        <Text style={styles.ngobeText}>{item.ngobe_text}</Text>
-        <Text style={styles.spanishText}>{item.spanish_text}</Text>
-
-        {item.audio_lento_url && (
-          <TouchableOpacity
-            style={styles.audioButton}
-            onPress={() => onPlayAudio(item.id, item.audio_lento_url)}
-            disabled={isLoadingAudio}
-          >
-            {isLoadingAudio ? (
-              <ActivityIndicator size="small" color={theme.colors.primary} />
-            ) : (
-              <Text style={styles.audioIcon}>{isPlaying ? "⏸" : "▶"}</Text>
-            )}
-          </TouchableOpacity>
-        )}
+const ContributionCard = React.memo(({ item, isPlaying, isLoadingAudio, onPlayAudio }) => {
+  return (
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.typeTag}>{item.category}</Text>
+        <Text style={styles.regionTag}>{item.region}</Text>
       </View>
-    );
-  },
-);
+      <Text style={styles.ngobeText}>{item.ngobe_text}</Text>
+      <Text style={styles.spanishText}>{item.spanish_text}</Text>
+
+      {item.audio_lento_url && (
+        <TouchableOpacity
+          style={styles.audioButton}
+          onPress={() => onPlayAudio(item.id, item.audio_lento_url)}
+          disabled={isLoadingAudio}
+        >
+          {isLoadingAudio ? (
+            <ActivityIndicator size="small" color={theme.colors.primary} />
+          ) : (
+            <Text style={styles.audioIcon}>{isPlaying ? '⏸' : '▶'}</Text>
+          )}
+        </TouchableOpacity>
+      )}
+    </View>
+  );
+});
 
 export default function ExploreScreen() {
   // Estados de datos y paginación
@@ -103,15 +95,15 @@ export default function ExploreScreen() {
   const [error, setError] = useState(null);
 
   // Estados de filtros
-  const [searchQuery, setSearchQuery] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
-  const [regionQuery, setRegionQuery] = useState("");
-  const [debouncedRegion, setDebouncedRegion] = useState("");
+  const [regionQuery, setRegionQuery] = useState('');
+  const [debouncedRegion, setDebouncedRegion] = useState('');
   const [regionSuggestions, setRegionSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  const [category, setCategory] = useState("Todas");
+  const [category, setCategory] = useState('Todas');
 
   // Estados de Audio
   const [sound, setSound] = useState(null);
@@ -149,23 +141,21 @@ export default function ExploreScreen() {
       if (debouncedRegion.length > 2) {
         try {
           const { data, error } = await supabase
-            .from("contributions")
-            .select("region")
-            .eq("status", "approved")
-            .ilike("region", `%${debouncedRegion}%`);
+            .from('contributions')
+            .select('region')
+            .eq('status', 'approved')
+            .ilike('region', `%${debouncedRegion}%`);
 
           if (error) throw error;
 
           if (data) {
             // Filtrar valores únicos, ignorar nulos y vacíos, y tomar hasta 5
-            const uniqueRegions = [
-              ...new Set(data.map((item) => item.region).filter(Boolean)),
-            ];
+            const uniqueRegions = [...new Set(data.map((item) => item.region).filter(Boolean))];
             setRegionSuggestions(uniqueRegions.slice(0, 5));
             setShowSuggestions(true);
           }
         } catch (err) {
-          console.error("Error obteniendo sugerencias:", err);
+          console.error('Error obteniendo sugerencias:', err);
         }
       } else {
         setRegionSuggestions([]);
@@ -194,34 +184,30 @@ export default function ExploreScreen() {
       }
 
       let query = supabase
-        .from("contributions")
-        .select(
-          "id, ngobe_text, spanish_text, category, region, audio_lento_url, created_at",
-        )
-        .eq("status", "approved")
-        .order("created_at", { ascending: false });
+        .from('contributions')
+        .select('id, ngobe_text, spanish_text, category, region, audio_lento_url, created_at')
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false });
 
       // Aplicar filtro de búsqueda general
       if (debouncedSearch) {
         query = query.or(
-          `ngobe_text.ilike.%${debouncedSearch}%,spanish_text.ilike.%${debouncedSearch}%`,
+          `ngobe_text.ilike.%${debouncedSearch}%,spanish_text.ilike.%${debouncedSearch}%`
         );
       }
 
       // Aplicar filtro de categoría
-      if (category !== "Todas") {
-        query = query.eq("category", category);
+      if (category !== 'Todas') {
+        query = query.eq('category', category);
       }
 
       // Aplicar filtro de región
       if (debouncedRegion) {
-        query = query.ilike("region", `%${debouncedRegion}%`);
+        query = query.ilike('region', `%${debouncedRegion}%`);
       }
 
       // Paginación
-      const start = reset
-        ? 0
-        : currentPage * LOAD_MORE_LIMIT + (INITIAL_LIMIT - LOAD_MORE_LIMIT);
+      const start = reset ? 0 : currentPage * LOAD_MORE_LIMIT + (INITIAL_LIMIT - LOAD_MORE_LIMIT);
       const limit = reset ? INITIAL_LIMIT : LOAD_MORE_LIMIT;
       const end = start + limit - 1;
 
@@ -253,13 +239,10 @@ export default function ExploreScreen() {
     } catch (err) {
       console.error(err);
       // Diferenciar error de red (TypeError usual en fetch) de error de BD
-      if (
-        err instanceof TypeError &&
-        err.message === "Network request failed"
-      ) {
-        setError("Error de conexión a internet. Verifica tu red.");
+      if (err instanceof TypeError && err.message === 'Network request failed') {
+        setError('Error de conexión a internet. Verifica tu red.');
       } else {
-        setError(err.message || "Ocurrió un error al cargar los datos.");
+        setError(err.message || 'Ocurrió un error al cargar los datos.');
       }
     } finally {
       setLoading(false);
@@ -276,11 +259,11 @@ export default function ExploreScreen() {
   }, [loading, loadingMore, hasMore, page, fetchData]);
 
   const handleClearFilters = useCallback(() => {
-    setSearchQuery("");
-    setDebouncedSearch("");
-    setRegionQuery("");
-    setDebouncedRegion("");
-    setCategory("Todas");
+    setSearchQuery('');
+    setDebouncedSearch('');
+    setRegionQuery('');
+    setDebouncedRegion('');
+    setCategory('Todas');
     setRegionSuggestions([]);
     setShowSuggestions(false);
   }, []);
@@ -314,16 +297,14 @@ export default function ExploreScreen() {
         // asumiendo que aquí tenemos la url pública o firmada, o usamos supabase storage.
         // Si url es solo el path (e.g. 'contributions/audio.m4a'):
         let audioUrl = url;
-        if (!url.startsWith("http")) {
-          const { data: publicUrlData } = supabase.storage
-            .from("audios")
-            .getPublicUrl(url);
+        if (!url.startsWith('http')) {
+          const { data: publicUrlData } = supabase.storage.from('audios').getPublicUrl(url);
           audioUrl = publicUrlData.publicUrl;
         }
 
         const { sound: newSound } = await Audio.Sound.createAsync(
           { uri: audioUrl },
-          { shouldPlay: true },
+          { shouldPlay: true }
         );
 
         setSound(newSound);
@@ -336,12 +317,12 @@ export default function ExploreScreen() {
           }
         });
       } catch (err) {
-        console.error("Error reproduciendo audio", err);
+        console.error('Error reproduciendo audio', err);
         setLoadingAudioId(null);
         setPlayingId(null);
       }
     },
-    [sound, playingId],
+    [sound, playingId]
   );
 
   const renderItem = useCallback(
@@ -353,7 +334,7 @@ export default function ExploreScreen() {
         onPlayAudio={handlePlayAudio}
       />
     ),
-    [playingId, loadingAudioId, handlePlayAudio],
+    [playingId, loadingAudioId, handlePlayAudio]
   );
 
   const keyExtractor = useCallback((item) => item.id.toString(), []);
@@ -364,10 +345,7 @@ export default function ExploreScreen() {
       return (
         <View style={styles.centerContainer}>
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity
-            style={styles.retryButton}
-            onPress={() => fetchData(0, true)}
-          >
+          <TouchableOpacity style={styles.retryButton} onPress={() => fetchData(0, true)}>
             <Text style={styles.retryButtonText}>Reintentar</Text>
           </TouchableOpacity>
         </View>
@@ -377,10 +355,7 @@ export default function ExploreScreen() {
       <View style={styles.centerContainer}>
         <Text style={styles.emptyIcon}>🔍</Text>
         <Text style={styles.emptyText}>No se encontraron resultados</Text>
-        <TouchableOpacity
-          style={styles.clearButton}
-          onPress={handleClearFilters}
-        >
+        <TouchableOpacity style={styles.clearButton} onPress={handleClearFilters}>
           <Text style={styles.clearButtonText}>Limpiar filtros</Text>
         </TouchableOpacity>
       </View>
@@ -415,18 +390,10 @@ export default function ExploreScreen() {
             {CATEGORIES.map((cat) => (
               <TouchableOpacity
                 key={cat}
-                style={[
-                  styles.categoryButton,
-                  category === cat && styles.categoryButtonActive,
-                ]}
+                style={[styles.categoryButton, category === cat && styles.categoryButtonActive]}
                 onPress={() => setCategory(cat)}
               >
-                <Text
-                  style={[
-                    styles.categoryText,
-                    category === cat && styles.categoryTextActive,
-                  ]}
-                >
+                <Text style={[styles.categoryText, category === cat && styles.categoryTextActive]}>
                   {cat}
                 </Text>
               </TouchableOpacity>
@@ -451,8 +418,8 @@ export default function ExploreScreen() {
             <TouchableOpacity
               style={styles.clearRegionButton}
               onPress={() => {
-                setRegionQuery("");
-                setDebouncedRegion("");
+                setRegionQuery('');
+                setDebouncedRegion('');
                 setShowSuggestions(false);
               }}
             >
@@ -539,13 +506,13 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     color: theme.colors.primary,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   categoryTextActive: {
     color: theme.colors.surface,
   },
   regionContainer: {
-    position: "relative",
+    position: 'relative',
   },
   regionInput: {
     backgroundColor: theme.colors.surface,
@@ -556,23 +523,23 @@ const styles = StyleSheet.create({
     paddingRight: 40,
   },
   clearRegionButton: {
-    position: "absolute",
+    position: 'absolute',
     right: 12,
     top: 10,
     width: 20,
     height: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#E0E0E0",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#E0E0E0',
     borderRadius: 10,
   },
   clearRegionText: {
     fontSize: 12,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
   },
   suggestionsContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 45,
     left: 0,
     right: 0,
@@ -580,7 +547,7 @@ const styles = StyleSheet.create({
     borderRadius: theme.borders.radius,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -590,7 +557,7 @@ const styles = StyleSheet.create({
   suggestionItem: {
     padding: theme.spacing.m,
     borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
+    borderBottomColor: '#F0F0F0',
   },
   suggestionText: {
     ...theme.typography.body,
@@ -606,16 +573,16 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.m,
     borderLeftWidth: 5,
     borderLeftColor: theme.colors.accent,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
-    position: "relative",
+    position: 'relative',
   },
   cardHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginBottom: theme.spacing.s,
     paddingRight: 40, // Espacio para el botón de audio
   },
@@ -626,17 +593,17 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 10,
     fontSize: 12,
-    fontWeight: "bold",
-    alignSelf: "flex-start",
+    fontWeight: 'bold',
+    alignSelf: 'flex-start',
   },
   regionTag: {
     color: theme.colors.secondary,
     fontSize: 12,
-    fontStyle: "italic",
+    fontStyle: 'italic',
   },
   ngobeText: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: theme.colors.textPrimary,
     marginBottom: 4,
     paddingRight: 40,
@@ -647,16 +614,16 @@ const styles = StyleSheet.create({
     paddingRight: 40,
   },
   audioButton: {
-    position: "absolute",
+    position: 'absolute',
     right: theme.spacing.m,
-    top: "50%",
+    top: '50%',
     marginTop: -15, // Ajuste para centrar verticalmente
     width: 30,
     height: 30,
     borderRadius: 15,
     backgroundColor: theme.colors.background,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: theme.colors.primary,
   },
@@ -675,20 +642,20 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   skeletonTextLarge: {
-    width: "70%",
+    width: '70%',
     height: 24,
     borderRadius: 4,
     marginBottom: 8,
   },
   skeletonTextSmall: {
-    width: "90%",
+    width: '90%',
     height: 16,
     borderRadius: 4,
   },
   centerContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingVertical: theme.spacing.xxl,
   },
   emptyIcon: {
@@ -699,7 +666,7 @@ const styles = StyleSheet.create({
     ...theme.typography.title,
     color: theme.colors.textSecondary,
     marginBottom: theme.spacing.m,
-    textAlign: "center",
+    textAlign: 'center',
   },
   clearButton: {
     padding: theme.spacing.m,
@@ -708,13 +675,13 @@ const styles = StyleSheet.create({
   },
   clearButtonText: {
     color: theme.colors.surface,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   errorText: {
     ...theme.typography.body,
     color: theme.colors.error,
     marginBottom: theme.spacing.m,
-    textAlign: "center",
+    textAlign: 'center',
   },
   retryButton: {
     padding: theme.spacing.m,
@@ -723,10 +690,10 @@ const styles = StyleSheet.create({
   },
   retryButtonText: {
     color: theme.colors.surface,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   footerLoader: {
     paddingVertical: theme.spacing.m,
-    alignItems: "center",
+    alignItems: 'center',
   },
 });

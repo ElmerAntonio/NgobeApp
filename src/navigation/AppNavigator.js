@@ -1,19 +1,19 @@
 // src/navigation/AppNavigator.js
-import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { ActivityIndicator, View } from "react-native";
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ActivityIndicator, View } from 'react-native';
 
-import LoginScreen from "../screens/LoginScreen";
-import PrivacyPolicyScreen from "../screens/PrivacyPolicyScreen";
-import DashboardScreen from "../screens/DashboardScreen";
-import ContributeScreen from "../screens/ContributeScreen";
-import ExploreScreen from "../screens/ExploreScreen";
-import ProfileScreen from "../screens/ProfileScreen";
+import LoginScreen from '../screens/LoginScreen';
+import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
+import DashboardScreen from '../screens/DashboardScreen';
+import ContributeScreen from '../screens/ContributeScreen';
+import ExploreScreen from '../screens/ExploreScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 
-import { theme } from "../utils/theme";
-import { useAuth } from "../context/AuthContext";
+import { theme } from '../utils/theme';
+import { useAuth } from '../context/AuthContext';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -32,9 +32,9 @@ function MainTabs() {
         headerStyle: {
           backgroundColor: theme.colors.primary,
         },
-        headerTintColor: "#fff",
+        headerTintColor: '#fff',
         headerTitleStyle: {
-          fontWeight: "bold",
+          fontWeight: 'bold',
         },
       }}
     >
@@ -53,7 +53,7 @@ export default function AppNavigator() {
   // Mostrar un indicador de carga mientras se verifica el estado de autenticación
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
@@ -72,9 +72,9 @@ export default function AppNavigator() {
               name="PrivacyPolicy"
               component={PrivacyPolicyScreen}
               options={{
-                presentation: "modal",
+                presentation: 'modal',
                 headerShown: true,
-                title: "Política de Privacidad",
+                title: 'Política de Privacidad',
               }}
             />
           </>

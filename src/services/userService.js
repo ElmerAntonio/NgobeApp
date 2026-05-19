@@ -1,5 +1,5 @@
-import { supabase } from "./supabaseClient";
-import { getApiUrl } from "./api";
+import { supabase } from './supabaseClient';
+import { getApiUrl } from './api';
 
 /**
  * Llama al endpoint seguro del backend para eliminar la cuenta de usuario,
@@ -17,7 +17,7 @@ export const deleteUserAccount = async () => {
     } = await supabase.auth.getSession();
 
     if (sessionError || !session) {
-      throw new Error("No se pudo obtener la sesión actual del usuario.");
+      throw new Error('No se pudo obtener la sesión actual del usuario.');
     }
 
     const token = session.access_token;
@@ -25,9 +25,9 @@ export const deleteUserAccount = async () => {
 
     // 2. Realizar petición DELETE al backend seguro
     const response = await fetch(`${apiUrl}/users/account`, {
-      method: "DELETE",
+      method: 'DELETE',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     });
@@ -35,20 +35,16 @@ export const deleteUserAccount = async () => {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        result.error || "Ocurrió un error al eliminar la cuenta.",
-      );
+      throw new Error(result.error || 'Ocurrió un error al eliminar la cuenta.');
     }
 
     // 3. Si todo es exitoso, retornar true
     return { success: true };
   } catch (error) {
-    console.error("Error en deleteUserAccount:", error);
+    console.error('Error en deleteUserAccount:', error);
     return {
       success: false,
-      error:
-        error.message ||
-        "Error de conexión con el servidor. Inténtalo más tarde.",
+      error: error.message || 'Error de conexión con el servidor. Inténtalo más tarde.',
     };
   }
 };

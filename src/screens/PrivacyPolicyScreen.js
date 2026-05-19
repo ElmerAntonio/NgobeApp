@@ -1,14 +1,7 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-} from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { theme } from "../utils/theme";
+import React, { useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { theme } from '../utils/theme';
 
 export default function PrivacyPolicyScreen({ navigation }) {
   const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
@@ -21,8 +14,7 @@ export default function PrivacyPolicyScreen({ navigation }) {
     const paddingToBottom = 30;
 
     const isEnd =
-      layoutMeasurement.height + contentOffset.y >=
-      contentSize.height - paddingToBottom;
+      layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
 
     if (isEnd && !isScrolledToEnd) {
       setIsScrolledToEnd(true);
@@ -32,13 +24,13 @@ export default function PrivacyPolicyScreen({ navigation }) {
   const handleAccept = async () => {
     try {
       // Guardar en AsyncStorage que el usuario aceptó la política
-      await AsyncStorage.setItem("privacy_accepted", "true");
+      await AsyncStorage.setItem('privacy_accepted', 'true');
 
       // Regresar a la pantalla anterior.
       // El LoginScreen debe actualizar su estado al enfocarse o leer este valor.
       navigation.goBack();
     } catch (error) {
-      console.error("Error guardando la aceptación de la política", error);
+      console.error('Error guardando la aceptación de la política', error);
     }
   };
 
@@ -50,37 +42,28 @@ export default function PrivacyPolicyScreen({ navigation }) {
         scrollEventThrottle={16} // Necesario para que onScroll se dispare con suficiente frecuencia
         contentContainerStyle={styles.scrollContent}
       >
-        <Text style={styles.title}>
-          Política de Privacidad y Tratamiento de Datos Personales
-        </Text>
+        <Text style={styles.title}>Política de Privacidad y Tratamiento de Datos Personales</Text>
 
         {/* TODO: Actualizar la fecha de entrada en vigor antes del lanzamiento oficial */}
-        <Text style={styles.date}>
-          Fecha de entrada en vigor: [FECHA_DE_LANZAMIENTO]
-        </Text>
+        <Text style={styles.date}>Fecha de entrada en vigor: [FECHA_DE_LANZAMIENTO]</Text>
 
         <Text style={styles.sectionTitle}>1. Información General</Text>
         {/* TODO: Actualizar la entidad responsable antes del lanzamiento oficial */}
         <Text style={styles.paragraph}>
-          Esta Política de Privacidad regula el tratamiento de datos personales
-          realizado por Proyecto NgobeApp, ubicado en la República de Panamá, en
-          adelante el "Responsable del Tratamiento". El presente documento se
-          enmarca dentro de las disposiciones de la Ley 81 de 2019 de Protección
-          de Datos Personales de la República de Panamá.
+          Esta Política de Privacidad regula el tratamiento de datos personales realizado por
+          Proyecto NgobeApp, ubicado en la República de Panamá, en adelante el "Responsable del
+          Tratamiento". El presente documento se enmarca dentro de las disposiciones de la Ley 81 de
+          2019 de Protección de Datos Personales de la República de Panamá.
         </Text>
 
         <Text style={styles.sectionTitle}>2. Datos Personales Recopilados</Text>
         <Text style={styles.paragraph}>
-          Recopilamos los siguientes tipos de datos personales a través de la
-          aplicación NgöbeApp:
+          Recopilamos los siguientes tipos de datos personales a través de la aplicación NgöbeApp:
         </Text>
         <View style={styles.bulletList}>
+          <Text style={styles.bullet}>• Correo electrónico (para registro y autenticación).</Text>
           <Text style={styles.bullet}>
-            • Correo electrónico (para registro y autenticación).
-          </Text>
-          <Text style={styles.bullet}>
-            • Grabaciones de voz (para preservación del idioma y entrenamiento
-            de IA).
+            • Grabaciones de voz (para preservación del idioma y entrenamiento de IA).
           </Text>
           <Text style={styles.bullet}>
             • Información regional (para categorizar variaciones dialectales).
@@ -90,17 +73,13 @@ export default function PrivacyPolicyScreen({ navigation }) {
           </Text>
         </View>
 
-        <Text style={styles.sectionTitle}>
-          3. Finalidad del Tratamiento de Datos
-        </Text>
+        <Text style={styles.sectionTitle}>3. Finalidad del Tratamiento de Datos</Text>
         <Text style={styles.paragraph}>
-          Los datos personales recolectados, específicamente las grabaciones de
-          voz y textos, serán utilizados con la finalidad exclusiva de
-          preservación de la lengua y cultura Ngäbe, educación, y para el
-          entrenamiento de modelos de Inteligencia Artificial destinados a la
-          traducción y revitalización del idioma Ngäbere. El correo electrónico
-          se utilizará únicamente para fines de autenticación y comunicación
-          relacionada con el proyecto.
+          Los datos personales recolectados, específicamente las grabaciones de voz y textos, serán
+          utilizados con la finalidad exclusiva de preservación de la lengua y cultura Ngäbe,
+          educación, y para el entrenamiento de modelos de Inteligencia Artificial destinados a la
+          traducción y revitalización del idioma Ngäbere. El correo electrónico se utilizará
+          únicamente para fines de autenticación y comunicación relacionada con el proyecto.
         </Text>
 
         <Text style={styles.sectionTitle}>4. Acceso a los Datos</Text>
@@ -112,62 +91,54 @@ export default function PrivacyPolicyScreen({ navigation }) {
             • Maestros autorizados para revisar y validar las aportaciones.
           </Text>
           <Text style={styles.bullet}>
-            • Administradores del sistema para el mantenimiento de la
-            plataforma.
+            • Administradores del sistema para el mantenimiento de la plataforma.
           </Text>
           <Text style={styles.bullet}>
-            • Sistemas automatizados de Inteligencia Artificial en entornos
-            seguros para su procesamiento.
+            • Sistemas automatizados de Inteligencia Artificial en entornos seguros para su
+            procesamiento.
           </Text>
         </View>
         <Text style={styles.paragraph}>
-          No venderemos, compartiremos ni distribuiremos sus datos personales a
-          terceros con fines comerciales.
+          No venderemos, compartiremos ni distribuiremos sus datos personales a terceros con fines
+          comerciales.
         </Text>
 
         <Text style={styles.sectionTitle}>5. Tiempo de Conservación</Text>
         <Text style={styles.paragraph}>
-          Los datos relacionados con aportes culturales y grabaciones de voz se
-          conservarán de manera indefinida, ya que forman parte de un esfuerzo
-          histórico y patrimonial para la preservación lingüística, a menos que
-          el titular ejerza su derecho de cancelación. Los datos de la cuenta
-          (correo) se conservarán mientras la cuenta esté activa.
+          Los datos relacionados con aportes culturales y grabaciones de voz se conservarán de
+          manera indefinida, ya que forman parte de un esfuerzo histórico y patrimonial para la
+          preservación lingüística, a menos que el titular ejerza su derecho de cancelación. Los
+          datos de la cuenta (correo) se conservarán mientras la cuenta esté activa.
         </Text>
 
-        <Text style={styles.sectionTitle}>
-          6. Derechos ARCO (Ley 81 de 2019)
-        </Text>
+        <Text style={styles.sectionTitle}>6. Derechos ARCO (Ley 81 de 2019)</Text>
         <Text style={styles.paragraph}>
-          En cumplimiento con la Ley 81 de Panamá, el titular de los datos
-          personales podrá ejercer en cualquier momento sus derechos de:
+          En cumplimiento con la Ley 81 de Panamá, el titular de los datos personales podrá ejercer
+          en cualquier momento sus derechos de:
         </Text>
         <View style={styles.bulletList}>
           <Text style={styles.bullet}>
-            • Acceso: Solicitar información sobre los datos que tenemos sobre
-            usted.
+            • Acceso: Solicitar información sobre los datos que tenemos sobre usted.
           </Text>
           <Text style={styles.bullet}>
-            • Rectificación: Solicitar la corrección de datos incorrectos o
-            incompletos.
+            • Rectificación: Solicitar la corrección de datos incorrectos o incompletos.
           </Text>
           <Text style={styles.bullet}>
-            • Cancelación (Eliminación): Solicitar la eliminación de sus datos,
-            siempre que la ley no nos obligue a conservarlos.
+            • Cancelación (Eliminación): Solicitar la eliminación de sus datos, siempre que la ley
+            no nos obligue a conservarlos.
           </Text>
           <Text style={styles.bullet}>
-            • Oposición: Oponerse al tratamiento de sus datos para fines
-            específicos.
+            • Oposición: Oponerse al tratamiento de sus datos para fines específicos.
           </Text>
           <Text style={styles.bullet}>
-            • Portabilidad: Obtener una copia de sus datos en un formato
-            estructurado.
+            • Portabilidad: Obtener una copia de sus datos en un formato estructurado.
           </Text>
         </View>
 
         <Text style={styles.sectionTitle}>7. Contacto</Text>
         <Text style={styles.paragraph}>
-          Para ejercer sus derechos ARCO o para cualquier consulta relacionada
-          con esta Política de Privacidad, puede contactarnos a través de:
+          Para ejercer sus derechos ARCO o para cualquier consulta relacionada con esta Política de
+          Privacidad, puede contactarnos a través de:
         </Text>
         {/* TODO: Actualizar el correo de contacto antes del lanzamiento oficial */}
         <Text style={styles.contactEmail}>privacidad@ngobeapp.pa</Text>
@@ -212,11 +183,11 @@ const styles = StyleSheet.create({
     ...theme.typography.caption,
     color: theme.colors.textSecondary,
     marginBottom: theme.spacing.l,
-    fontStyle: "italic",
+    fontStyle: 'italic',
   },
   sectionTitle: {
     ...theme.typography.body,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: theme.colors.textPrimary,
     marginTop: theme.spacing.l,
     marginBottom: theme.spacing.s,
@@ -240,7 +211,7 @@ const styles = StyleSheet.create({
   contactEmail: {
     ...theme.typography.body,
     color: theme.colors.primary,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginTop: theme.spacing.s,
   },
   footer: {
@@ -248,7 +219,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: -3 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
@@ -258,11 +229,11 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
     padding: theme.spacing.m,
     borderRadius: theme.borders.radius,
-    alignItems: "center",
+    alignItems: 'center',
   },
   acceptButtonText: {
     color: theme.colors.surface,
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });

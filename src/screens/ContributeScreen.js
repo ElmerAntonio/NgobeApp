@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,20 +9,17 @@ import {
   SafeAreaView,
   Alert,
   ActivityIndicator,
-} from "react-native";
-import { Audio } from "expo-av";
-import { theme } from "../utils/theme";
-import { supabase } from "../services/supabaseClient";
-import {
-  CONTRIBUTION_CATEGORIES,
-  validateContribution,
-} from "../utils/validation";
+} from 'react-native';
+import { Audio } from 'expo-av';
+import { theme } from '../utils/theme';
+import { supabase } from '../services/supabaseClient';
+import { CONTRIBUTION_CATEGORIES, validateContribution } from '../utils/validation';
 
 export default function ContributeScreen() {
-  const [category, setCategory] = useState("Palabra");
-  const [ngobeText, setNgobeText] = useState("");
-  const [spanishText, setSpanishText] = useState("");
-  const [region, setRegion] = useState("General");
+  const [category, setCategory] = useState('Palabra');
+  const [ngobeText, setNgobeText] = useState('');
+  const [spanishText, setSpanishText] = useState('');
+  const [region, setRegion] = useState('General');
   const [loading, setLoading] = useState(false);
 
   const [recording, setRecording] = useState(null);
@@ -41,24 +38,21 @@ export default function ContributeScreen() {
 
     try {
       const permission = await Audio.requestPermissionsAsync();
-      if (permission.status === "granted") {
+      if (permission.status === 'granted') {
         await Audio.setAudioModeAsync({
           allowsRecordingIOS: true,
           playsInSilentModeIOS: true,
         });
 
         const { recording } = await Audio.Recording.createAsync(
-          Audio.RecordingOptionsPresets.HIGH_QUALITY,
+          Audio.RecordingOptionsPresets.HIGH_QUALITY
         );
         setRecording({ instance: recording, type });
       } else {
-        Alert.alert(
-          "Permiso denegado",
-          "Necesitamos acceso al micrófono para grabar.",
-        );
+        Alert.alert('Permiso denegado', 'Necesitamos acceso al micrófono para grabar.');
       }
     } catch (err) {
-      console.error("Error al iniciar grabación", err);
+      console.error('Error al iniciar grabación', err);
     }
   }
 
@@ -73,8 +67,8 @@ export default function ContributeScreen() {
       // Validar duración mínima de 2 segundos (2000 ms)
       if (status.durationMillis < 2000) {
         Alert.alert(
-          "Audio muy corto",
-          "El audio debe durar al menos 2 segundos. Intenta de nuevo.",
+          'Audio muy corto',
+          'El audio debe durar al menos 2 segundos. Intenta de nuevo.'
         );
         setRecording(null);
         return;
@@ -84,7 +78,7 @@ export default function ContributeScreen() {
       setRecordings((prev) => ({ ...prev, [recording.type]: uri }));
       setRecording(null);
     } catch (error) {
-      console.error("Error al detener grabación", error);
+      console.error('Error al detener grabación', error);
     }
   }
 
@@ -95,9 +89,7 @@ export default function ContributeScreen() {
     // Validar el tamaño del archivo (máximo 10MB)
     const maxSize = 10 * 1024 * 1024; // 10MB en bytes
     if (blob.size > maxSize) {
-      throw new Error(
-        "El archivo de audio supera el límite de 10MB permitido.",
-      );
+      throw new Error('El archivo de audio supera el límite de 10MB permitido.');
     }
 
     const arrayBuffer = await new Promise((resolve) => {
@@ -142,15 +134,13 @@ export default function ContributeScreen() {
     }
 
     if (!isAudioFile) {
-      throw new Error(
-        "El archivo seleccionado no es un formato de audio válido o está corrupto.",
-      );
+      throw new Error('El archivo seleccionado no es un formato de audio válido o está corrupto.');
     }
 
     const { data, error } = await supabase.storage
-      .from("audios")
+      .from('audios')
       .upload(`contributions/${fileName}`, arrayBuffer, {
-        contentType: "audio/m4a",
+        contentType: 'audio/m4a',
       });
 
     if (error) throw error;
@@ -178,19 +168,13 @@ export default function ContributeScreen() {
 
       const timestamp = Date.now();
       if (recordings.lento) {
-        audioLentoPath = await uploadAudio(
-          recordings.lento,
-          `lento_${timestamp}.m4a`,
-        );
+        audioLentoPath = await uploadAudio(recordings.lento, `lento_${timestamp}.m4a`);
       }
       if (recordings.rapido) {
-        audioRapidoPath = await uploadAudio(
-          recordings.rapido,
-          `rapido_${timestamp}.m4a`,
-        );
+        audioRapidoPath = await uploadAudio(recordings.rapido, `rapido_${timestamp}.m4a`);
       }
 
-      const { error } = await supabase.from("contributions").insert([
+      const { error } = await supabase.from('contributions').insert([
         {
           category,
           ngobe_text: ngobeText,
@@ -198,18 +182,18 @@ export default function ContributeScreen() {
           region,
           audio_lento_url: audioLentoPath,
           audio_rapido_url: audioRapidoPath,
-          status: "pending",
+          status: 'pending',
         },
       ]);
 
       if (error) throw error;
 
-      Alert.alert("¡Éxito!", "Tu aporte ha sido enviado para revisión.");
-      setNgobeText("");
-      setSpanishText("");
+      Alert.alert('¡Éxito!', 'Tu aporte ha sido enviado para revisión.');
+      setNgobeText('');
+      setSpanishText('');
       setRecordings({ lento: null, rapido: null });
     } catch (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
     } finally {
       setLoading(false);
     }
@@ -220,8 +204,7 @@ export default function ContributeScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.headerTitle}>Nuevo Aporte</Text>
         <Text style={styles.description}>
-          Comparte tu conocimiento. El audio ayudará a entrenar la IA para
-          reconocer el Ngäbere.
+          Comparte tu conocimiento. El audio ayudará a entrenar la IA para reconocer el Ngäbere.
         </Text>
 
         <View style={styles.card}>
@@ -236,12 +219,7 @@ export default function ContributeScreen() {
                 accessibilityState={{ selected: category === cat }}
                 accessibilityLabel={`Categoría ${cat}`}
               >
-                <Text
-                  style={[
-                    styles.catBtnText,
-                    category === cat && styles.catBtnTextActive,
-                  ]}
-                >
+                <Text style={[styles.catBtnText, category === cat && styles.catBtnTextActive]}>
                   {cat}
                 </Text>
               </TouchableOpacity>
@@ -282,34 +260,26 @@ export default function ContributeScreen() {
           <Text style={styles.label}>Audios para IA</Text>
           <View style={styles.audioContainer}>
             <TouchableOpacity
-              style={[
-                styles.audioBtn,
-                recording?.type === "lento" && styles.recordingActive,
-              ]}
-              onPressIn={() => startRecording("lento")}
+              style={[styles.audioBtn, recording?.type === 'lento' && styles.recordingActive]}
+              onPressIn={() => startRecording('lento')}
               onPressOut={stopRecording}
               accessibilityRole="button"
               accessibilityLabel="Mantener presionado para grabar audio lento"
             >
               <Text style={styles.audioBtnText}>
-                {recordings.lento ? "✅ Lento Grabado" : "🎙️ Mantén para Lento"}
+                {recordings.lento ? '✅ Lento Grabado' : '🎙️ Mantén para Lento'}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[
-                styles.audioBtn,
-                recording?.type === "rapido" && styles.recordingActive,
-              ]}
-              onPressIn={() => startRecording("rapido")}
+              style={[styles.audioBtn, recording?.type === 'rapido' && styles.recordingActive]}
+              onPressIn={() => startRecording('rapido')}
               onPressOut={stopRecording}
               accessibilityRole="button"
               accessibilityLabel="Mantener presionado para grabar audio natural"
             >
               <Text style={styles.audioBtnText}>
-                {recordings.rapido
-                  ? "✅ Rápido Grabado"
-                  : "🎙️ Mantén para Natural"}
+                {recordings.rapido ? '✅ Rápido Grabado' : '🎙️ Mantén para Natural'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -355,7 +325,7 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
     padding: theme.spacing.m,
     borderRadius: theme.borders.radiusLarge,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -372,15 +342,15 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.border,
     borderRadius: theme.borders.radius,
     padding: theme.spacing.s,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: '#FAFAFA',
   },
   textArea: {
     minHeight: 80,
-    textAlignVertical: "top",
+    textAlignVertical: 'top',
   },
   categoryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: theme.spacing.xs,
   },
   catBtn: {
@@ -401,40 +371,40 @@ const styles = StyleSheet.create({
     color: theme.colors.surface,
   },
   audioContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     marginTop: theme.spacing.s,
   },
   audioBtn: {
     flex: 1,
-    backgroundColor: "#E8F5E9",
+    backgroundColor: '#E8F5E9',
     padding: theme.spacing.m,
     borderRadius: theme.borders.radius,
     marginHorizontal: 4,
-    alignItems: "center",
+    alignItems: 'center',
     borderWidth: 1,
     borderColor: theme.colors.primary,
   },
   recordingActive: {
-    backgroundColor: "#FFEBEE",
-    borderColor: "#D32F2F",
+    backgroundColor: '#FFEBEE',
+    borderColor: '#D32F2F',
   },
   audioBtnText: {
     color: theme.colors.primary,
-    fontWeight: "600",
+    fontWeight: '600',
     fontSize: 11,
-    textAlign: "center",
+    textAlign: 'center',
   },
   submitBtn: {
     backgroundColor: theme.colors.accent,
     padding: theme.spacing.m,
     borderRadius: theme.borders.radius,
-    alignItems: "center",
+    alignItems: 'center',
     marginTop: theme.spacing.xl,
   },
   submitBtnText: {
-    color: "#000",
-    fontWeight: "bold",
+    color: '#000',
+    fontWeight: 'bold',
     fontSize: 16,
   },
 });
