@@ -14,6 +14,8 @@ import {
 import { supabase } from "../services/supabaseClient";
 import { theme } from "../utils/theme";
 import { validateAuthForm } from "../utils/validation";
+import { useFocusEffect } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -21,6 +23,23 @@ export default function LoginScreen({ navigation }) {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkPrivacyAcceptance = async () => {
+        try {
+          const accepted = await AsyncStorage.getItem("privacy_accepted");
+          if (accepted === "true") {
+            setAcceptedTerms(true);
+          }
+        } catch (error) {
+          console.error("Error leyendo la aceptación de la política", error);
+        }
+      };
+
+      checkPrivacyAcceptance();
+    }, []),
+  );
 
   const handleAuth = async () => {
     const validation = validateAuthForm({
@@ -99,26 +118,33 @@ export default function LoginScreen({ navigation }) {
           />
 
           {!isLogin && (
-            <TouchableOpacity
-              style={styles.consentRow}
-              onPress={() => setAcceptedTerms(!acceptedTerms)}
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked: acceptedTerms }}
-              accessibilityLabel="Aceptar política de privacidad y términos de uso"
-            >
-              <View
-                style={[
-                  styles.checkbox,
-                  acceptedTerms && styles.checkboxChecked,
-                ]}
+            <View style={styles.consentRow}>
+              <TouchableOpacity
+                onPress={() => setAcceptedTerms(!acceptedTerms)}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: acceptedTerms }}
+                accessibilityLabel="Aceptar política de privacidad y términos de uso"
               >
-                {acceptedTerms && <Text style={styles.checkboxMark}>✓</Text>}
-              </View>
+                <View
+                  style={[
+                    styles.checkbox,
+                    acceptedTerms && styles.checkboxChecked,
+                  ]}
+                >
+                  {acceptedTerms && <Text style={styles.checkboxMark}>✓</Text>}
+                </View>
+              </TouchableOpacity>
               <Text style={styles.consentText}>
-                Acepto la política de privacidad y los términos de uso antes de
-                aportar datos o audios.
+                Acepto la{" "}
+                <Text
+                  style={styles.linkText}
+                  onPress={() => navigation.navigate("PrivacyPolicy")}
+                >
+                  política de privacidad
+                </Text>{" "}
+                y los términos de uso antes de aportar datos o audios.
               </Text>
-            </TouchableOpacity>
+            </View>
           )}
 
           <TouchableOpacity
@@ -142,7 +168,9 @@ export default function LoginScreen({ navigation }) {
             onPress={handleToggleMode}
             disabled={isLoading}
             accessibilityRole="button"
-            accessibilityLabel={isLogin ? "Cambiar a registro" : "Cambiar a ingreso"}
+            accessibilityLabel={
+              isLogin ? "Cambiar a registro" : "Cambiar a ingreso"
+            }
           >
             <Text style={styles.toggleButtonText}>
               {isLogin
@@ -268,5 +296,9 @@ const styles = StyleSheet.create({
     ...theme.typography.caption,
     flex: 1,
     color: theme.colors.textPrimary,
+  },
+  linkText: {
+    color: theme.colors.primary,
+    textDecorationLine: "underline",
   },
 });
