@@ -6,6 +6,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ActivityIndicator, View } from "react-native";
 
 import LoginScreen from "../screens/LoginScreen";
+import PrivacyPolicyScreen from "../screens/PrivacyPolicyScreen";
 import DashboardScreen from "../screens/DashboardScreen";
 import ContributeScreen from "../screens/ContributeScreen";
 import ExploreScreen from "../screens/ExploreScreen";
@@ -65,7 +66,18 @@ export default function AppNavigator() {
         {session ? (
           <Stack.Screen name="Main" component={MainTabs} />
         ) : (
-          <Stack.Screen name="Login" component={LoginScreen} />
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen
+              name="PrivacyPolicy"
+              component={PrivacyPolicyScreen}
+              options={{
+                presentation: "modal",
+                headerShown: true,
+                title: "Política de Privacidad",
+              }}
+            />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
