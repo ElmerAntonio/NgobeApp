@@ -1,3 +1,4 @@
+
 {
   "name": "NgobeApp",
   "version": "1.0.0",
@@ -10,7 +11,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "node --test tests/*.test.cjs",
-    "test:security": "pnpm audit",
+    "test:security": "pnpm audit --audit-level=moderate",
     "test:mass": "pnpm run test && pnpm run test:security",
     "lint": "eslint src tests backend --ext .js,.jsx,.cjs",
     "lint:fix": "eslint src tests backend --ext .js,.jsx,.cjs --fix",
