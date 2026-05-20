@@ -1,10 +1,9 @@
 # NgöbeApp 🌿
 
 
-[![Security Pipeline](https://github.com/<user>/<repo>/actions/workflows/security.yml/badge.svg)](https://github.com/<user>/<repo>/actions/workflows/security.yml)
+[![Security Pipeline](https://github.com/ElmerAntonio/NgobeApp/actions/workflows/security.yml/badge.svg)](https://github.com/ElmerAntonio/NgobeApp/actions/workflows/security.yml)
 
-[![CI Pipeline](https://github.com/<user>/<repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/<user>/<repo>/actions/workflows/ci.yml)
-<!-- TODO: Reemplazar <user>/<repo> con el nombre real del repositorio antes del lanzamiento -->
+[![CI Pipeline](https://github.com/ElmerAntonio/NgobeApp/actions/workflows/ci.yml/badge.svg)](https://github.com/ElmerAntonio/NgobeApp/actions/workflows/ci.yml)
 
 **NgöbeApp** es una iniciativa tecnológica y social diseñada para preservar, enseñar y revitalizar el idioma y la cultura Ngäbe a través de Inteligencia Artificial. Este proyecto nace con el propósito de conectar las raíces ancestrales de la Comarca Ngäbe-Buglé (Panamá) con las herramientas del futuro.
 
@@ -35,6 +34,23 @@ La interfaz de usuario ha sido concebida con un profundo respeto por la identida
 ## 📜 Legal y Privacidad
 
 Este proyecto es de código abierto, pero está protegido bajo la licencia **GNU GPL v3** para garantizar que siempre se mantenga libre y en beneficio de la comunidad. Cumple con la **Ley 81 de Protección de Datos Personales de Panamá** y se guía por las buenas prácticas y normativas ISO.
+
+## 🔐 Variables de Entorno
+
+### Para desarrollo local:
+
+1. Copia `.env.example` a `.env`
+2. Completa estas variables con tus valores de Supabase:
+   - `EXPO_PUBLIC_SUPABASE_URL`: Tu URL de Supabase (ej: `https://xxxxx.supabase.co`)
+   - `EXPO_PUBLIC_SUPABASE_ANON_KEY`: Tu ANON KEY de Supabase
+
+### Para CI/CD (GitHub Actions):
+
+Los secretos deben estar configurados en:
+- **GitHub Settings → Secrets and variables → Actions**
+- Secretos requeridos:
+  - `SUPABASE_URL`
+  - `SUPABASE_ANON_KEY`
 
 ## 🚀 Instalación, Uso y Pruebas
 
