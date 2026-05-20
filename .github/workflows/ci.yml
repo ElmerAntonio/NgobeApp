@@ -1,0 +1,79 @@
+name: CI Pipeline
+
+# Se ejecuta en pushes a la rama main y en todos los pull requests
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  tests:
+    name: Pruebas y Seguridad (tests)
+    runs-on: ubuntu-latest
+
+    # IMPORTANTE: Configurar estos secrets en
+    # GitHub Settings > Secrets and variables > Actions
+    # antes de ejecutar el pipeline en producción.
+    env:
+      EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+
+    steps:
+      # Paso 1: Clonar el repositorio
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      # Paso 2: Configurar pnpm versión 9
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      # Paso 3: Configurar Node.js versión 20
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      # Paso 4: Instalar las dependencias usando pnpm
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      # Paso 5: Ejecutar la batería de pruebas masivas
+      - name: Ejecutar pruebas
+        run: pnpm run test:mass
+
+  lint:
+    name: Análisis de Código (lint)
+    # Este job depende de que el job 'tests' pase exitosamente
+    needs: tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Clonar el repositorio
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      # Paso 2: Configurar pnpm versión 9
+      - name: Instalar pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      # Paso 3: Configurar Node.js versión 20
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      # Paso 4: Instalar las dependencias usando pnpm
+      - name: Instalar dependencias
+        run: pnpm install --frozen-lockfile
+
+      # Paso 5: Ejecutar el lint (no bloquea el pipeline si falla)
+      - name: Ejecutar lint
+        run: pnpm run lint
+        continue-on-error: true
