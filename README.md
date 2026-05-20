@@ -3,6 +3,9 @@
 
 [![Security Pipeline](https://github.com/<user>/<repo>/actions/workflows/security.yml/badge.svg)](https://github.com/<user>/<repo>/actions/workflows/security.yml)
 
+[![CI Pipeline](https://github.com/<user>/<repo>/actions/workflows/ci.yml/badge.svg)](https://github.com/<user>/<repo>/actions/workflows/ci.yml)
+<!-- TODO: Reemplazar <user>/<repo> con el nombre real del repositorio antes del lanzamiento -->
+
 **NgöbeApp** es una iniciativa tecnológica y social diseñada para preservar, enseñar y revitalizar el idioma y la cultura Ngäbe a través de Inteligencia Artificial. Este proyecto nace con el propósito de conectar las raíces ancestrales de la Comarca Ngäbe-Buglé (Panamá) con las herramientas del futuro.
 
 ## 🎯 Visión y Objetivos
