@@ -10,6 +10,9 @@ on:
       - main
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
   tests:
     name: Pruebas y Seguridad (tests)
