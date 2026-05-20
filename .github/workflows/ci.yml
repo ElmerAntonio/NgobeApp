@@ -1,5 +1,8 @@
 name: CI Pipeline
 
+permissions:
+  contents: read
+
 # Se ejecuta en pushes a la rama main y en todos los pull requests
 on:
   push:
