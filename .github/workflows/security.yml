@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-# NOTA DE PROTECCIÓN DE RAMA:
-# El propietario del repositorio debe habilitar "Require status checks to pass before merging"
-# en GitHub Settings > Branches > main, y seleccionar estos jobs para que bloqueen PRs maliciosos.
-
 jobs:
   dependency-audit:
     name: Dependency Audit
@@ -19,12 +15,16 @@ jobs:
       - uses: pnpm/action-setup@v3
         with:
           version: 9
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
       - name: Run pnpm audit
         run: pnpm audit --audit-level=moderate
         # Esto fallará y bloqueará el merge si hay vulnerabilidades moderadas o mayores
 
   secret-scan:
-    name: Secret Scan
+    name: Secret Scan (TruffleHog)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,28 +34,25 @@ jobs:
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
-          base: main
-          head: HEAD
           extra_args: --debug --only-verified
-        # Esto fallará el pipeline si encuentra secretos verificables
+        # Esto fallará si encuentra secretos verificables
 
   lint-and-test:
     name: Lint and Test
     runs-on: ubuntu-latest
-    needs: dependency-audit # Debe pasar dependency-audit primero
+    needs: dependency-audit
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
       - uses: pnpm/action-setup@v3
         with:
           version: 9
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Run Linter
-        run: pnpm run lint || true # continue-on-error simulado con || true por ahora
+        run: pnpm run lint || true
       - name: Run Mass Tests
         run: pnpm run test:mass
-        # Este paso debe pasar si o si
