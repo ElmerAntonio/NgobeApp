@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
@@ -7,16 +7,16 @@ import {
   SafeAreaView,
   Alert,
   ActivityIndicator,
-} from "react-native";
-import { useState, useEffect } from "react";
-import { theme } from "../utils/theme";
-import { supabase } from "../services/supabaseClient";
-import { deleteUserAccount } from "../services/userService";
+} from 'react-native';
+import { useState, useEffect } from 'react';
+import { theme } from '../utils/theme';
+import { supabase } from '../services/supabaseClient';
+import { deleteUserAccount } from '../services/userService';
 
 export default function ProfileScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState(null);
-  const [userEmail, setUserEmail] = useState("");
+  const [userEmail, setUserEmail] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -31,22 +31,22 @@ export default function ProfileScreen({ navigation }) {
       } = await supabase.auth.getUser();
       if (authError || !user) throw authError;
 
-      setUserEmail(user.email || "");
+      setUserEmail(user.email || '');
 
       const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
         .single();
 
-      if (error && error.code !== "PGRST116") {
+      if (error && error.code !== 'PGRST116') {
         throw error;
       }
 
       setProfile(data);
     } catch (error) {
-      console.error("Error fetching profile:", error);
-      Alert.alert("Error", "No se pudo cargar el perfil");
+      console.error('Error fetching profile:', error);
+      Alert.alert('Error', 'No se pudo cargar el perfil');
     } finally {
       setLoading(false);
     }
@@ -59,43 +59,40 @@ export default function ProfileScreen({ navigation }) {
     if (userEmail) {
       return userEmail.charAt(0).toUpperCase();
     }
-    return "?";
+    return '?';
   };
 
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      Alert.alert("Error", error.message);
+      Alert.alert('Error', error.message);
       return;
     }
-    navigation.replace("Login");
+    navigation.replace('Login');
   };
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      "¿Estás seguro?",
-      "Esta acción eliminará tu cuenta, todos tus audios, aportes y perfil de forma permanente.",
+      '¿Estás seguro?',
+      'Esta acción eliminará tu cuenta, todos tus audios, aportes y perfil de forma permanente.',
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: 'Cancelar', style: 'cancel' },
         {
-          text: "Continuar",
-          style: "destructive",
+          text: 'Continuar',
+          style: 'destructive',
           onPress: () => {
             // Segunda confirmación requerida por Ley 81 de Panamá
             Alert.prompt(
-              "Confirmación Definitiva",
+              'Confirmación Definitiva',
               'Por favor escribe "ELIMINAR" para confirmar la eliminación total de tus datos según el Art. 16 de la Ley 81 de Protección de Datos Personales.',
               [
-                { text: "Cancelar", style: "cancel" },
+                { text: 'Cancelar', style: 'cancel' },
                 {
-                  text: "Confirmar",
-                  style: "destructive",
+                  text: 'Confirmar',
+                  style: 'destructive',
                   onPress: async (text) => {
-                    if (text !== "ELIMINAR") {
-                      Alert.alert(
-                        "Error",
-                        'Debe escribir la palabra "ELIMINAR" exactamente.',
-                      );
+                    if (text !== 'ELIMINAR') {
+                      Alert.alert('Error', 'Debe escribir la palabra "ELIMINAR" exactamente.');
                       return;
                     }
 
@@ -105,25 +102,25 @@ export default function ProfileScreen({ navigation }) {
 
                     if (result.success) {
                       Alert.alert(
-                        "Datos Eliminados",
-                        "Tu cuenta y todos tus datos han sido eliminados de nuestros sistemas, en cumplimiento con el Art. 16 de la Ley 81 de Protección de Datos Personales de Panamá.",
+                        'Datos Eliminados',
+                        'Tu cuenta y todos tus datos han sido eliminados de nuestros sistemas, en cumplimiento con el Art. 16 de la Ley 81 de Protección de Datos Personales de Panamá.',
                         [
                           {
-                            text: "OK",
-                            onPress: () => navigation.replace("Login"),
+                            text: 'OK',
+                            onPress: () => navigation.replace('Login'),
                           },
-                        ],
+                        ]
                       );
                     } else {
-                      Alert.alert("Error", result.error);
+                      Alert.alert('Error', result.error);
                     }
                   },
                 },
-              ],
+              ]
             );
           },
         },
-      ],
+      ]
     );
   };
 
@@ -135,13 +132,13 @@ export default function ProfileScreen({ navigation }) {
     );
   }
 
-  const isSuperadmin = profile?.rol === "superadmin";
+  const isSuperadmin = profile?.rol === 'superadmin';
   const roleName = profile?.rol
     ? profile.rol.charAt(0).toUpperCase() + profile.rol.slice(1)
-    : "Colaborador";
-  const communityName = profile?.comunidad || "Comunidad no especificada";
-  const userName = profile?.nombre_completo || "Usuario";
-  const status = profile?.estado || "pendiente";
+    : 'Colaborador';
+  const communityName = profile?.comunidad || 'Comunidad no especificada';
+  const userName = profile?.nombre_completo || 'Usuario';
+  const status = profile?.estado || 'pendiente';
 
   return (
     <SafeAreaView style={styles.container}>
@@ -217,9 +214,7 @@ export default function ProfileScreen({ navigation }) {
           accessibilityRole="button"
           accessibilityLabel="Eliminar mi cuenta y todos mis datos"
         >
-          <Text style={styles.deleteText}>
-            Eliminar mi cuenta y todos mis datos
-          </Text>
+          <Text style={styles.deleteText}>Eliminar mi cuenta y todos mis datos</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -228,8 +223,8 @@ export default function ProfileScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   centerContent: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   statusBadge: {
     marginTop: theme.spacing.s,
@@ -238,35 +233,35 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   status_aprobado: {
-    backgroundColor: "#E8F5E9",
+    backgroundColor: '#E8F5E9',
   },
   statusText_aprobado: {
-    color: "#2E7D32",
+    color: '#2E7D32',
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   status_pendiente: {
-    backgroundColor: "#FFF8E1",
+    backgroundColor: '#FFF8E1',
   },
   statusText_pendiente: {
-    color: "#F57F17",
+    color: '#F57F17',
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   status_bloqueado: {
-    backgroundColor: "#FFEBEE",
+    backgroundColor: '#FFEBEE',
   },
   statusText_bloqueado: {
-    color: "#D32F2F",
+    color: '#D32F2F',
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
   },
   header: {
-    alignItems: "center",
+    alignItems: 'center',
     padding: theme.spacing.xl,
     backgroundColor: theme.colors.primary,
     borderBottomLeftRadius: 30,
@@ -277,13 +272,13 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 40,
     backgroundColor: theme.colors.surface,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: theme.spacing.m,
   },
   avatarText: {
     fontSize: 32,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: theme.colors.primary,
   },
   name: {
@@ -304,7 +299,7 @@ const styles = StyleSheet.create({
     padding: theme.spacing.m,
     borderRadius: theme.borders.radius,
     marginBottom: theme.spacing.s,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 1,
@@ -312,7 +307,7 @@ const styles = StyleSheet.create({
   },
   menuText: {
     ...theme.typography.body,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   adminSection: {
     marginTop: theme.spacing.l,
@@ -325,28 +320,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.error, // Usamos rojo para destacar que es de admin
     marginBottom: theme.spacing.s,
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
   logoutBtn: {
     marginTop: theme.spacing.xl,
-    backgroundColor: "#FFEBEE",
+    backgroundColor: '#FFEBEE',
     borderWidth: 1,
     borderColor: theme.colors.error,
   },
   logoutText: {
     color: theme.colors.error,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 
   deleteBtn: {
     marginTop: theme.spacing.s,
-    backgroundColor: "#D32F2F",
+    backgroundColor: '#D32F2F',
     borderWidth: 0,
   },
   deleteText: {
     color: theme.colors.surface,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });

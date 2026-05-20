@@ -1,5 +1,5 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
-import { supabase } from "../services/supabaseClient";
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import { supabase } from '../services/supabaseClient';
 
 // Crear el contexto de autenticación
 const AuthContext = createContext({});
@@ -34,11 +34,7 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  return (
-    <AuthContext.Provider value={{ session, user, loading }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ session, user, loading }}>{children}</AuthContext.Provider>;
 };
 
 // Hook personalizado para usar el contexto de autenticación

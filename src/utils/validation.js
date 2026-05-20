@@ -54,13 +54,7 @@ function validateAuthForm({ email, password, isLogin = true, acceptedTerms = fal
   };
 }
 
-function validateContribution({
-  category,
-  ngobeText,
-  spanishText,
-  region,
-  recordings = {},
-}) {
+function validateContribution({ category, ngobeText, spanishText, region, recordings = {} }) {
   const cleanNgobeText = normalizeField(ngobeText);
   const cleanSpanishText = normalizeField(spanishText);
   const cleanRegion = normalizeField(region);
