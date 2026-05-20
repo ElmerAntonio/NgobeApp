@@ -1,11 +1,12 @@
 # NgöbeApp 🌿
 
-
 [![Security Pipeline](https://github.com/ElmerAntonio/NgobeApp/actions/workflows/security.yml/badge.svg)](https://github.com/ElmerAntonio/NgobeApp/actions/workflows/security.yml)
 
 [![CI Pipeline](https://github.com/ElmerAntonio/NgobeApp/actions/workflows/ci.yml/badge.svg)](https://github.com/ElmerAntonio/NgobeApp/actions/workflows/ci.yml)
 
 **NgöbeApp** es una iniciativa tecnológica y social diseñada para preservar, enseñar y revitalizar el idioma y la cultura Ngäbe a través de Inteligencia Artificial. Este proyecto nace con el propósito de conectar las raíces ancestrales de la Comarca Ngäbe-Buglé (Panamá) con las herramientas del futuro.
+
+Diseño de app para la implementación de una IA para aprendizaje del dialecto Ngöbe, con futura estructura para enseñanza y traducción. Se implementará por medio de documentación y también la aportación de Maestros y otros colaboradores.
 
 ## 🎯 Visión y Objetivos
 
@@ -30,6 +31,7 @@ La interfaz de usuario ha sido concebida con un profundo respeto por la identida
 - **Frontend:** React Native (Navegación con React Navigation).
 - **Backend & Base de Datos:** Supabase (PostgreSQL, Storage para audios, Autenticación).
 - **Gestión de Estado y API:** Axios para peticiones externas.
+- **Lenguajes:** JavaScript (93.7%), Kotlin (3.6%), PLpgSQL (2.7%)
 
 ## 📜 Legal y Privacidad
 
@@ -46,11 +48,14 @@ Este proyecto es de código abierto, pero está protegido bajo la licencia **GNU
 
 ### Para CI/CD (GitHub Actions):
 
-Los secretos deben estar configurados en:
-- **GitHub Settings → Secrets and variables → Actions**
-- Secretos requeridos:
-  - `SUPABASE_URL`
-  - `SUPABASE_ANON_KEY`
+Los secretos necesarios están configurados en **Settings → Secrets and variables → Actions**:
+- `SUPABASE_URL`: URL de tu proyecto Supabase
+- `SUPABASE_ANON_KEY`: ANON KEY de Supabase
+
+> **Nota:** Si necesitas configurar estos secretos:
+> 1. Ve a tu repositorio → Settings → Secrets and variables → Actions
+> 2. Click "New repository secret"
+> 3. Agrega `SUPABASE_URL` y `SUPABASE_ANON_KEY`
 
 ## 🚀 Instalación, Uso y Pruebas
 
@@ -68,3 +73,12 @@ Los secretos deben estar configurados en:
 - Auditoría estática de accesibilidad, variables de entorno y archivos residuales.
 - Reglas base de seguridad en Supabase: RLS, ownership por usuario y bucket de audios privado.
 - `npm audit` para confirmar vulnerabilidades conocidas en dependencias.
+
+## 📋 Pipeline de CI/CD
+
+El proyecto cuenta con pipelines automatizados que se ejecutan en cada push a `main` y pull requests:
+
+- **Tests:** Valida todas las pruebas y auditorías de seguridad
+- **Lint:** Análisis estático de código
+
+Para más detalles, consulta [.github/workflows/](https://github.com/ElmerAntonio/NgobeApp/tree/main/.github/workflows)
