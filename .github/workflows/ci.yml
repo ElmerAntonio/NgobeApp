@@ -10,9 +10,6 @@ on:
       - main
   pull_request:
 
-permissions:
-  contents: read
-
 jobs:
   tests:
     name: Pruebas y Seguridad (tests)
@@ -30,28 +27,32 @@ jobs:
         uses: actions/checkout@v4
 
       # Paso 2: Configurar pnpm versión 9
-      - name: Instalar pnpm
-        uses: pnpm/action-setup@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 9
 
       # Paso 3: Configurar Node.js versión 20
-      - name: Configurar Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
       # Paso 4: Instalar las dependencias usando pnpm
-      - name: Instalar dependencias
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      # Paso 5: Ejecutar la batería de pruebas masivas
-      - name: Ejecutar pruebas
-        run: pnpm run test:mass || true  # ← Agregar || true para no fallar
+      # Paso 5: Ejecutar la batería de pruebas masivas (tests + audit de seguridad)
+      - name: Run tests
+        run: pnpm run test
+        
+      # Paso 6: Ejecutar auditoría de seguridad
+      - name: Run security audit
+        run: pnpm run test:security
 
   lint:
-    name: Análisis de Código (lint)
+    name: Code Analysis (lint)
     # Este job depende de que el job 'tests' pase exitosamente
     needs: tests
     runs-on: ubuntu-latest
@@ -62,23 +63,23 @@ jobs:
         uses: actions/checkout@v4
 
       # Paso 2: Configurar pnpm versión 9
-      - name: Instalar pnpm
-        uses: pnpm/action-setup@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 9
 
       # Paso 3: Configurar Node.js versión 20
-      - name: Configurar Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'pnpm'
 
       # Paso 4: Instalar las dependencias usando pnpm
-      - name: Instalar dependencias
+      - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       # Paso 5: Ejecutar el lint (no bloquea el pipeline si falla)
-      - name: Ejecutar lint
+      - name: Run linter
         run: pnpm run lint
         continue-on-error: true
