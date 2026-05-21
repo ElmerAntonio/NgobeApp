@@ -50,9 +50,8 @@ export default function ProfileScreen({ navigation }) {
 
   useEffect(() => {
     fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-
 
   const getAvatarLetter = () => {
     if (profile?.nombre_completo) {

@@ -29,7 +29,7 @@ Basado en la arquitectura del proyecto, nos encontramos en la transición y desa
 - [ ] Flujo aprobación (Colaborador → Maestro)
 - [ ] Búsqueda con variantes regionales
 - [ ] Módulo grabación audio (lento + rápido)
-- [ ] `ExploreScreen`: consumir datos reales de Supabase (sin mocks)
+- [x] `ExploreScreen`: consumir datos reales de Supabase (sin mocks)
 
 ### ⏳ Fase 3 — IA conversacional Ngäbere (Pendiente)
 *Integración con API de Anthropic (Claude).*
@@ -89,6 +89,7 @@ Estamos estancados si:
 
 ## Siguientes pasos inmediatos (Fase 2)
 Prioridad Alta:
-- Conectar `ExploreScreen` a Supabase para cargar palabras y frases reales.
 - Implementar y probar el módulo de grabación de audios (Lento y Normal) en dispositivo físico.
 - Integrar Supabase Storage para guardar y recuperar las grabaciones.
+
+*Nota: La Fase 1 está cerrada en código. Faltan pruebas físicas en Android con el micrófono para cerrar completamente la Fase 2.*

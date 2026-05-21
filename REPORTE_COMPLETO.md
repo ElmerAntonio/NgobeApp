@@ -72,3 +72,13 @@ El proyecto está sólidamente cimentado en sus primeras fases y actualmente se 
 **Recomendaciones Técnicas (Fase 2 y 4):**
 - **Derecho al Olvido:** Asegurarse de que el usuario pueda solicitar la eliminación de su cuenta (y sus aportes o desvincularlos de su identidad) desde `ProfileScreen`.
 - **Auditoría (Log):** Preparar la base de datos de Supabase para tener una tabla de auditoría en la Fase 4 para rastrear modificaciones sensibles a los aportes culturales.
+
+---
+
+## 7. 🚀 Actualizaciones Recientes (Cierre de Fase 1 e inicio de Fase 2)
+*   **Licencia del Corpus:** Se ha creado `CORPUS_LICENSE.md` para proteger los datos culturales bajo CC BY-NC 4.0, previniendo su uso comercial, mientras se mantiene la licencia GPL v3 para el código.
+*   **Corrección en ExploreScreen:** Se ha solucionado un bug crítico en `ExploreScreen.js` (corrigiendo `AudioPlayer.displayName` a `ContributionCard.displayName`) que habría causado problemas en producción.
+*   **Activación de Datos:** Se ha activado la carga de datos reales desde Supabase en `ExploreScreen`, descomentando la lógica de los filtros.
+*   **Backend:** Se ha migrado el backend para usar `pnpm` (en un workspace) en lugar de `npm`, mejorando la seguridad y consistencia de las dependencias.
+
+*Nota: La Fase 1 está cerrada a nivel de código. Solo faltan las pruebas físicas en Android con el micrófono para cerrar completamente la Fase 2.*
