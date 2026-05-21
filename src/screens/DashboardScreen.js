@@ -114,5 +114,5 @@ const styles = StyleSheet.create({
   activityDate: {
     ...theme.typography.caption,
     marginTop: theme.spacing.xs,
-  }
+  },
 });

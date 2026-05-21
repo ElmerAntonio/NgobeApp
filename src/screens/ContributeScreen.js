@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, StyleSheet, TouchableOpacity, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { Audio } from 'expo-av';
 import { theme } from '../utils/theme';
 import { supabase } from '../services/supabaseClient';
@@ -11,7 +21,7 @@ export default function ContributeScreen() {
   const [spanishText, setSpanishText] = useState('');
   const [region, setRegion] = useState('General');
   const [loading, setLoading] = useState(false);
-  
+
   const [recording, setRecording] = useState(null);
   const [recordings, setRecordings] = useState({ lento: null, rapido: null });
 
@@ -48,11 +58,24 @@ export default function ContributeScreen() {
 
   async function stopRecording() {
     if (!recording) return;
-    
+
     try {
+      // Obtener el estado para verificar la duración antes de descargar
+      const status = await recording.instance.getStatusAsync();
       await recording.instance.stopAndUnloadAsync();
+
+      // Validar duración mínima de 2 segundos (2000 ms)
+      if (status.durationMillis < 2000) {
+        Alert.alert(
+          'Audio muy corto',
+          'El audio debe durar al menos 2 segundos. Intenta de nuevo.'
+        );
+        setRecording(null);
+        return;
+      }
+
       const uri = recording.instance.getURI();
-      setRecordings(prev => ({ ...prev, [recording.type]: uri }));
+      setRecordings((prev) => ({ ...prev, [recording.type]: uri }));
       setRecording(null);
     } catch (error) {
       console.error('Error al detener grabación', error);
@@ -62,11 +85,57 @@ export default function ContributeScreen() {
   const uploadAudio = async (uri, fileName) => {
     const response = await fetch(uri);
     const blob = await response.blob();
+
+    // Validar el tamaño del archivo (máximo 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB en bytes
+    if (blob.size > maxSize) {
+      throw new Error('El archivo de audio supera el límite de 10MB permitido.');
+    }
+
     const arrayBuffer = await new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result);
       reader.readAsArrayBuffer(blob);
     });
+
+    // Validar formato de audio verificando bytes mágicos
+    const bytes = new Uint8Array(arrayBuffer);
+
+    // Helper para verificar los primeros N bytes
+    const checkBytes = (offset, expectedBytes) => {
+      if (bytes.length < offset + expectedBytes.length) return false;
+      for (let i = 0; i < expectedBytes.length; i++) {
+        if (bytes[offset + i] !== expectedBytes[i]) return false;
+      }
+      return true;
+    };
+
+    let isAudioFile = false;
+
+    // Verificar si es M4A / AAC (ftyp box en el offset 4)
+    // ftyp = 0x66 0x74 0x79 0x70
+    if (checkBytes(4, [0x66, 0x74, 0x79, 0x70])) {
+      isAudioFile = true;
+    }
+    // Verificar si es WAV (empieza con RIFF)
+    // RIFF = 0x52 0x49 0x46 0x46
+    else if (checkBytes(0, [0x52, 0x49, 0x46, 0x46])) {
+      isAudioFile = true;
+    }
+    // Verificar si es MP3 (empieza con ID3 o 0xFF 0xFB/0xF3/0xF2)
+    // ID3 = 0x49 0x44 0x33
+    else if (
+      checkBytes(0, [0x49, 0x44, 0x33]) ||
+      checkBytes(0, [0xff, 0xfb]) ||
+      checkBytes(0, [0xff, 0xf3]) ||
+      checkBytes(0, [0xff, 0xf2])
+    ) {
+      isAudioFile = true;
+    }
+
+    if (!isAudioFile) {
+      throw new Error('El archivo seleccionado no es un formato de audio válido o está corrupto.');
+    }
 
     const { data, error } = await supabase.storage
       .from('audios')
@@ -113,7 +182,7 @@ export default function ContributeScreen() {
           region,
           audio_lento_url: audioLentoPath,
           audio_rapido_url: audioRapidoPath,
-          status: 'pending'
+          status: 'pending',
         },
       ]);
 
@@ -142,15 +211,17 @@ export default function ContributeScreen() {
           <Text style={styles.label}>Categoría</Text>
           <View style={styles.categoryRow}>
             {CONTRIBUTION_CATEGORIES.map((cat) => (
-              <TouchableOpacity 
-                key={cat} 
+              <TouchableOpacity
+                key={cat}
                 onPress={() => setCategory(cat)}
                 style={[styles.catBtn, category === cat && styles.catBtnActive]}
                 accessibilityRole="button"
                 accessibilityState={{ selected: category === cat }}
                 accessibilityLabel={`Categoría ${cat}`}
               >
-                <Text style={[styles.catBtnText, category === cat && styles.catBtnTextActive]}>{cat}</Text>
+                <Text style={[styles.catBtnText, category === cat && styles.catBtnTextActive]}>
+                  {cat}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -188,8 +259,8 @@ export default function ContributeScreen() {
 
           <Text style={styles.label}>Audios para IA</Text>
           <View style={styles.audioContainer}>
-            <TouchableOpacity 
-              style={[styles.audioBtn, recording?.type === 'lento' && styles.recordingActive]} 
+            <TouchableOpacity
+              style={[styles.audioBtn, recording?.type === 'lento' && styles.recordingActive]}
               onPressIn={() => startRecording('lento')}
               onPressOut={stopRecording}
               accessibilityRole="button"
@@ -199,9 +270,9 @@ export default function ContributeScreen() {
                 {recordings.lento ? '✅ Lento Grabado' : '🎙️ Mantén para Lento'}
               </Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[styles.audioBtn, recording?.type === 'rapido' && styles.recordingActive]} 
+
+            <TouchableOpacity
+              style={[styles.audioBtn, recording?.type === 'rapido' && styles.recordingActive]}
               onPressIn={() => startRecording('rapido')}
               onPressOut={stopRecording}
               accessibilityRole="button"
@@ -213,14 +284,18 @@ export default function ContributeScreen() {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity 
-            style={[styles.submitBtn, loading && { opacity: 0.7 }]} 
+          <TouchableOpacity
+            style={[styles.submitBtn, loading && { opacity: 0.7 }]}
             onPress={handleSubmit}
             disabled={loading}
             accessibilityRole="button"
             accessibilityLabel="Subir aporte"
           >
-            {loading ? <ActivityIndicator color="#000" /> : <Text style={styles.submitBtnText}>Subir Aporte</Text>}
+            {loading ? (
+              <ActivityIndicator color="#000" />
+            ) : (
+              <Text style={styles.submitBtnText}>Subir Aporte</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -318,7 +393,7 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     fontWeight: '600',
     fontSize: 11,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   submitBtn: {
     backgroundColor: theme.colors.accent,
@@ -331,5 +406,5 @@ const styles = StyleSheet.create({
     color: '#000',
     fontWeight: 'bold',
     fontSize: 16,
-  }
+  },
 });

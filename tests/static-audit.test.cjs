@@ -63,7 +63,11 @@ test('touch targets include accessibility roles and labels', () => {
 
     assert.ok(touchables > 0, `${file} should contain touch targets`);
     assert.equal(count(source, /accessibilityRole=/g), touchables, `${file} role count mismatch`);
-    assert.equal(count(source, /accessibilityLabel=/g), touchables + count(source, /<TextInput\b/g), `${file} label count mismatch`);
+    assert.equal(
+      count(source, /accessibilityLabel=/g),
+      touchables + count(source, /<TextInput\b/g),
+      `${file} label count mismatch`
+    );
   }
 });
 
@@ -78,5 +82,5 @@ test('profile logout ends the Supabase session before returning to login', () =>
   const profile = read('src/screens/ProfileScreen.js');
 
   assert.match(profile, /supabase\.auth\.signOut\(\)/);
-  assert.match(profile, /navigation\.replace\('Login'\)/);
+  assert.match(profile, /navigation\.replace\(['\"]Login['\"]\)/);
 });

@@ -44,5 +44,5 @@ export const theme = {
   borders: {
     radius: 8, // Bordes ligeramente redondeados
     radiusLarge: 16,
-  }
+  },
 };

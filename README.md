@@ -1,40 +1,84 @@
 # NgöbeApp 🌿
 
+[![Security Pipeline](https://github.com/ElmerAntonio/NgobeApp/actions/workflows/security.yml/badge.svg)](https://github.com/ElmerAntonio/NgobeApp/actions/workflows/security.yml)
+
+[![CI Pipeline](https://github.com/ElmerAntonio/NgobeApp/actions/workflows/ci.yml/badge.svg)](https://github.com/ElmerAntonio/NgobeApp/actions/workflows/ci.yml)
+
 **NgöbeApp** es una iniciativa tecnológica y social diseñada para preservar, enseñar y revitalizar el idioma y la cultura Ngäbe a través de Inteligencia Artificial. Este proyecto nace con el propósito de conectar las raíces ancestrales de la Comarca Ngäbe-Buglé (Panamá) con las herramientas del futuro.
 
+Diseño de app para la implementación de una IA para aprendizaje del dialecto Ngöbe, con futura estructura para enseñanza y traducción. Se implementará por medio de documentación y también la aportación de Maestros y otros colaboradores.
+
 ## 🎯 Visión y Objetivos
+
 El objetivo principal es entrenar un modelo de Inteligencia Artificial capaz de entender, escribir y hablar el idioma Ngäbe, reconociendo las distintas regionalidades de la Comarca.
 
 En esta fase inicial, la aplicación está diseñada para **maestros, sabios y personas autorizadas** que nutrirán la base de datos de la IA con:
+
 - Palabras y frases.
 - Cuentos y canciones tradicionales.
 - Grabaciones de audio en pronunciación lenta y rápida para facilitar el aprendizaje de la IA y de futuros estudiantes.
 - Identificación de dialectos por región.
 
 ## 🎨 Diseño Visual
+
 La interfaz de usuario ha sido concebida con un profundo respeto por la identidad Ngäbe:
+
 - **Colores:** Inspirados en la naturaleza, las montañas de la cordillera y los tonos tierra.
 - **Formas:** Uso de patrones geométricos, especialmente triángulos, que son un símbolo distintivo en la artesanía y vestimenta (naguas) Ngäbe.
 
 ## 🏗 Arquitectura
+
 - **Frontend:** React Native (Navegación con React Navigation).
 - **Backend & Base de Datos:** Supabase (PostgreSQL, Storage para audios, Autenticación).
 - **Gestión de Estado y API:** Axios para peticiones externas.
+- **Lenguajes:** JavaScript (93.7%), Kotlin (3.6%), PLpgSQL (2.7%)
 
 ## 📜 Legal y Privacidad
+
 Este proyecto es de código abierto, pero está protegido bajo la licencia **GNU GPL v3** para garantizar que siempre se mantenga libre y en beneficio de la comunidad. Cumple con la **Ley 81 de Protección de Datos Personales de Panamá** y se guía por las buenas prácticas y normativas ISO.
 
+## 🔐 Variables de Entorno
+
+### Para desarrollo local:
+
+1. Copia `.env.example` a `.env`
+2. Completa estas variables con tus valores de Supabase:
+   - `EXPO_PUBLIC_SUPABASE_URL`: Tu URL de Supabase (ej: `https://xxxxx.supabase.co`)
+   - `EXPO_PUBLIC_SUPABASE_ANON_KEY`: Tu ANON KEY de Supabase
+
+### Para CI/CD (GitHub Actions):
+
+Los secretos necesarios están configurados en **Settings → Secrets and variables → Actions**:
+- `SUPABASE_URL`: URL de tu proyecto Supabase
+- `SUPABASE_ANON_KEY`: ANON KEY de Supabase
+
+> **Nota:** Si necesitas configurar estos secretos:
+> 1. Ve a tu repositorio → Settings → Secrets and variables → Actions
+> 2. Click "New repository secret"
+> 3. Agrega `SUPABASE_URL` y `SUPABASE_ANON_KEY`
+
 ## 🚀 Instalación, Uso y Pruebas
+
 1. Clona el repositorio.
 2. Copia `.env.example` a `.env` y completa `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
-3. Instala las dependencias: `npm install`
-4. Inicia Expo: `npm run start`
-5. Abre la app con Expo Go, o ejecuta en dispositivo/emulador con `npm run android` o `npm run ios`.
-6. Ejecuta la batería local de pruebas: `npm run test:mass`
+3. Instala las dependencias: `pnpm install`
+4. Inicia Expo: `pnpm run start`
+5. Abre la app con Expo Go, o ejecuta en dispositivo/emulador con `pnpm run android` o `pnpm run ios`.
+6. Ejecuta la batería local de pruebas: `pnpm run test:mass`
 
 ## 🧪 Qué valida la batería actual
+
 - Validaciones de login, registro, consentimiento y aportes.
 - Estructura mínima del proyecto y scripts de uso.
 - Auditoría estática de accesibilidad, variables de entorno y archivos residuales.
 - Reglas base de seguridad en Supabase: RLS, ownership por usuario y bucket de audios privado.
 - `npm audit` para confirmar vulnerabilidades conocidas en dependencias.
+
+## 📋 Pipeline de CI/CD
+
+El proyecto cuenta con pipelines automatizados que se ejecutan en cada push a `main` y pull requests:
+
+- **Tests:** Valida todas las pruebas y auditorías de seguridad
+- **Lint:** Análisis estático de código
+
+Para más detalles, consulta [.github/workflows/](https://github.com/ElmerAntonio/NgobeApp/tree/main/.github/workflows)

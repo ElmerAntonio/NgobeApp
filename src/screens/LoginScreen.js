@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,17 +10,36 @@ import {
   Platform,
   Alert,
   ActivityIndicator,
-} from "react-native";
-import { supabase } from "../services/supabaseClient";
-import { theme } from "../utils/theme";
-import { validateAuthForm } from "../utils/validation";
+} from 'react-native';
+import { supabase } from '../services/supabaseClient';
+import { theme } from '../utils/theme';
+import { validateAuthForm } from '../utils/validation';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const checkPrivacyAcceptance = async () => {
+        try {
+          const accepted = await AsyncStorage.getItem('privacy_accepted');
+          if (accepted === 'true') {
+            setAcceptedTerms(true);
+          }
+        } catch (error) {
+          console.error('Error leyendo la aceptación de la política', error);
+        }
+      };
+
+      checkPrivacyAcceptance();
+    }, [])
+  );
 
   const handleAuth = async () => {
     const validation = validateAuthForm({
@@ -43,15 +62,15 @@ export default function LoginScreen({ navigation }) {
           password,
         });
         if (error) throw error;
-        navigation.replace("Main");
+        navigation.replace('Main');
       } else {
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
         // Asumiendo que la confirmación de email está desactivada, el usuario ya debería estar logueado.
-        navigation.replace("Main");
+        navigation.replace('Main');
       }
     } catch (error) {
-      Alert.alert("Error de Autenticación", error.message);
+      Alert.alert('Error de Autenticación', error.message);
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +87,7 @@ export default function LoginScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.content}
       >
         <View style={styles.headerContainer}>
@@ -99,26 +118,25 @@ export default function LoginScreen({ navigation }) {
           />
 
           {!isLogin && (
-            <TouchableOpacity
-              style={styles.consentRow}
-              onPress={() => setAcceptedTerms(!acceptedTerms)}
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked: acceptedTerms }}
-              accessibilityLabel="Aceptar política de privacidad y términos de uso"
-            >
-              <View
-                style={[
-                  styles.checkbox,
-                  acceptedTerms && styles.checkboxChecked,
-                ]}
+            <View style={styles.consentRow}>
+              <TouchableOpacity
+                onPress={() => setAcceptedTerms(!acceptedTerms)}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: acceptedTerms }}
+                accessibilityLabel="Aceptar política de privacidad y términos de uso"
               >
-                {acceptedTerms && <Text style={styles.checkboxMark}>✓</Text>}
-              </View>
+                <View style={[styles.checkbox, acceptedTerms && styles.checkboxChecked]}>
+                  {acceptedTerms && <Text style={styles.checkboxMark}>✓</Text>}
+                </View>
+              </TouchableOpacity>
               <Text style={styles.consentText}>
-                Acepto la política de privacidad y los términos de uso antes de
-                aportar datos o audios.
+                Acepto la{' '}
+                <Text style={styles.linkText} onPress={() => navigation.navigate('PrivacyPolicy')}>
+                  política de privacidad
+                </Text>{' '}
+                y los términos de uso antes de aportar datos o audios.
               </Text>
-            </TouchableOpacity>
+            </View>
           )}
 
           <TouchableOpacity
@@ -126,14 +144,12 @@ export default function LoginScreen({ navigation }) {
             onPress={handleAuth}
             disabled={isLoading}
             accessibilityRole="button"
-            accessibilityLabel={isLogin ? "Ingresar" : "Registrarse"}
+            accessibilityLabel={isLogin ? 'Ingresar' : 'Registrarse'}
           >
             {isLoading ? (
               <ActivityIndicator color={theme.colors.surface} />
             ) : (
-              <Text style={styles.buttonText}>
-                {isLogin ? "Ingresar" : "Registrarse"}
-              </Text>
+              <Text style={styles.buttonText}>{isLogin ? 'Ingresar' : 'Registrarse'}</Text>
             )}
           </TouchableOpacity>
 
@@ -142,20 +158,16 @@ export default function LoginScreen({ navigation }) {
             onPress={handleToggleMode}
             disabled={isLoading}
             accessibilityRole="button"
-            accessibilityLabel={isLogin ? "Cambiar a registro" : "Cambiar a ingreso"}
+            accessibilityLabel={isLogin ? 'Cambiar a registro' : 'Cambiar a ingreso'}
           >
             <Text style={styles.toggleButtonText}>
-              {isLogin
-                ? "¿No tienes cuenta? Regístrate"
-                : "¿Ya tienes cuenta? Ingresa"}
+              {isLogin ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Ingresa'}
             </Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>
-            Acceso exclusivo para maestros y superadmin
-          </Text>
+          <Text style={styles.footerText}>Acceso exclusivo para maestros y superadmin</Text>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -169,11 +181,11 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
     padding: theme.spacing.xl,
   },
   headerContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: theme.spacing.xxl,
   },
   title: {
@@ -185,13 +197,13 @@ const styles = StyleSheet.create({
   subtitle: {
     ...theme.typography.body,
     color: theme.colors.secondary,
-    fontStyle: "italic",
+    fontStyle: 'italic',
   },
   formContainer: {
     backgroundColor: theme.colors.surface,
     padding: theme.spacing.l,
     borderRadius: theme.borders.radiusLarge,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -200,7 +212,7 @@ const styles = StyleSheet.create({
   label: {
     ...theme.typography.caption,
     marginBottom: theme.spacing.xs,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   input: {
     height: 50,
@@ -209,41 +221,41 @@ const styles = StyleSheet.create({
     borderRadius: theme.borders.radius,
     paddingHorizontal: theme.spacing.m,
     marginBottom: theme.spacing.m,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: '#FAFAFA',
   },
   button: {
     backgroundColor: theme.colors.primary,
     height: 50,
     borderRadius: theme.borders.radius,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: theme.spacing.s,
   },
   buttonText: {
     color: theme.colors.surface,
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   footerContainer: {
     marginTop: theme.spacing.xl,
-    alignItems: "center",
+    alignItems: 'center',
   },
   footerText: {
     ...theme.typography.caption,
-    textAlign: "center",
+    textAlign: 'center',
   },
   toggleButton: {
     marginTop: theme.spacing.m,
-    alignItems: "center",
+    alignItems: 'center',
   },
   toggleButtonText: {
     color: theme.colors.primary,
     ...theme.typography.caption,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   consentRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     marginBottom: theme.spacing.m,
   },
   checkbox: {
@@ -252,8 +264,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.primary,
     borderRadius: 4,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: theme.spacing.s,
     marginTop: 2,
   },
@@ -262,11 +274,15 @@ const styles = StyleSheet.create({
   },
   checkboxMark: {
     color: theme.colors.surface,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   consentText: {
     ...theme.typography.caption,
     flex: 1,
     color: theme.colors.textPrimary,
+  },
+  linkText: {
+    color: theme.colors.primary,
+    textDecorationLine: 'underline',
   },
 });
