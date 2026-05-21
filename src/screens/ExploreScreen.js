@@ -21,26 +21,26 @@ const LOAD_MORE_LIMIT = 10;
 
 // Animación Shimmer para el Skeleton Loader
 const SkeletonCard = () => {
-  const shimmerValue = useRef(new Animated.Value(0)).current;
+  const shimmerValue = useRef(new Animated.Value(0));
 
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
-        Animated.timing(shimmerValue, {
+        Animated.timing(shimmerValue.current, {
           toValue: 1,
           duration: 1000,
           useNativeDriver: false,
         }),
-        Animated.timing(shimmerValue, {
+        Animated.timing(shimmerValue.current, {
           toValue: 0,
           duration: 1000,
           useNativeDriver: false,
         }),
       ])
     ).start();
-  }, [shimmerValue]);
+  }, [shimmerValue.current]);
 
-  const backgroundColor = shimmerValue.interpolate({
+  const backgroundColor = shimmerValue.current.interpolate({
     inputRange: [0, 1],
     outputRange: ['#E0E0E0', '#F5F5F5'],
   });
@@ -84,6 +84,8 @@ const ContributionCard = React.memo(({ item, isPlaying, isLoadingAudio, onPlayAu
     </View>
   );
 });
+
+AudioPlayer.displayName = "AudioPlayer";
 
 export default function ExploreScreen() {
   // Estados de datos y paginación
@@ -168,9 +170,11 @@ export default function ExploreScreen() {
 
   // Resetear paginación al cambiar cualquier filtro
   useEffect(() => {
-    setPage(0);
-    setHasMore(true);
-    fetchData(0, true);
+    // setPage(0);
+
+    // setHasMore(true);
+
+    // fetchData(0, true);
   }, [debouncedSearch, debouncedRegion, category]);
 
   // Función para obtener datos

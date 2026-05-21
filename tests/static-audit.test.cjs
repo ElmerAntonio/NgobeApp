@@ -82,5 +82,5 @@ test('profile logout ends the Supabase session before returning to login', () =>
   const profile = read('src/screens/ProfileScreen.js');
 
   assert.match(profile, /supabase\.auth\.signOut\(\)/);
-  assert.match(profile, /navigation\.replace\(['\"]Login['\"]\)/);
+  assert.match(profile, /navigation\.replace\(['"]Login['"]\)/);
 });
