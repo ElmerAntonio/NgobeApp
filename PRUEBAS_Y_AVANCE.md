@@ -1,80 +1,94 @@
-# Pruebas y avance de NgobeApp
+# Pruebas y avance de NgöbeApp
 
-Fecha base del reporte: 2026-05-09
+Fecha base del reporte: 2026-05-09 (Actualizado)
 
-## Estado ejecutivo
-El proyecto está avanzando, pero todavía está en una fase temprana. Ya existe una app navegable con login, dashboard, aportes, exploración, perfil, Supabase y tema visual. El bloqueo principal era que no había forma repetible de comprobar calidad: ahora existe una batería local con `npm run test:mass`.
+## Estado Ejecutivo de Fases
+
+Basado en la arquitectura del proyecto, nos encontramos en la transición y desarrollo activo de la **Fase 2**.
+
+### ✅ Fase 0 — Ya construido (Completada)
+- [x] Navegación (tabs + stack)
+- [x] Pantallas UI base (5 screens)
+- [x] Tema visual Ngäbe (colores, formas)
+- [x] Componente triángulo (`NgobeTriangle`)
+- [x] Estructura de carpetas escalable
+- [x] Supabase + Expo configurados y listos
+
+### ✅ Fase 1 — Infraestructura y Auth (Completada)
+- [x] Supabase: esquema SQL + RLS habilitado
+- [x] Auth real (login/logout con Supabase)
+- [x] Contexto de sesión (`AuthContext.js`)
+- [x] AppNavigator: proteger rutas por rol/sesión
+- [x] Variables `.env` reales (URL + anon key)
+- [x] `react-native-safe-area` + `bottom-tabs` implementados
+
+### 🚧 Fase 2 — Corpus y gestión de datos (En Progreso - FASE ACTUAL)
+*El corazón del proyecto: el diccionario Ngäbere.*
+- [ ] CRUD palabras/frases con región y variantes
+- [ ] Supabase Storage para audios
+- [ ] Flujo aprobación (Colaborador → Maestro)
+- [ ] Búsqueda con variantes regionales
+- [ ] Módulo grabación audio (lento + rápido)
+- [ ] `ExploreScreen`: consumir datos reales de Supabase (sin mocks)
+
+### ⏳ Fase 3 — IA conversacional Ngäbere (Pendiente)
+*Integración con API de Anthropic (Claude).*
+- [ ] Pantalla chat con IA (`ConversaScreen.js`)
+- [ ] Prompt con corpus Ngäbere en contexto
+- [ ] Detección de región por vocabulario
+- [ ] Traductor Ngäbere ↔ Español
+- [ ] Modo lección (aprendiz)
+- [ ] Panel admin: stats y calidad corpus
+
+### ⏳ Fase 4 — Lanzamiento y comunidad (Pendiente)
+- [ ] Build APK + TestFlight
+- [ ] Onboarding maestros
+- [ ] Backup + cumplimiento Ley 81 estricto en producción
+
+---
 
 ## Cómo usar el programa
-1. Instala dependencias con `npm install`.
+1. Instala dependencias con `pnpm install` (el proyecto usa `pnpm`, no `npm`).
 2. Copia `.env.example` a `.env`.
 3. Completa `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
 4. Aplica `supabase/schema.sql` en un proyecto Supabase nuevo, o `supabase/security_patch.sql` si ya existe la base.
-5. Inicia Expo con `npm run start`.
+5. Inicia Expo con `pnpm run start`.
 6. Entra con una cuenta existente o regístrate aceptando privacidad y términos.
-7. Usa `Aportar` para enviar palabra, frase, cuento o canción con región/dialecto y audios lento/natural.
+7. Usa `Aportar` para enviar palabra, frase, cuento o canción.
 8. Usa `Perfil` para cerrar sesión.
 
 ## Cómo correr pruebas masivas
 Ejecuta:
 
 ```bash
-npm run test:mass
+pnpm run test:mass
 ```
 
 Esto corre:
-- `npm run test`: pruebas de validaciones, estructura, accesibilidad, seguridad estática y SQL de Supabase.
-- `npm run test:security`: `npm audit` para dependencias.
+- `pnpm run test`: pruebas de validaciones, estructura, accesibilidad, seguridad estática y SQL de Supabase (con el test runner nativo de Node.js).
+- `pnpm run test:security`: `pnpm audit` para dependencias.
 
 Para iterar más rápido durante desarrollo:
 
 ```bash
-npm test
+pnpm run test
 ```
 
-Última ejecución local:
-- `npm run test:mass`: 20 pruebas pasaron.
-- `npm audit`: 0 vulnerabilidades.
-- Seguridad de dependencias corregida: `axios` subió a `1.16.0` y `postcss` queda forzado a `^8.5.10` mediante `overrides`.
-- `npm run start -- --localhost --port 8081`: Metro inició, pero Expo falló al instalar React Native DevTools con `spawn EPERM` dentro del entorno actual. Para uso normal, ejecútalo desde tu terminal local con `npm run start`.
-
-## Qué se corrigió usando el reporte como punto de partida
-- Se agregaron scripts reales en `package.json`: `start`, `android`, `ios`, `web`, `test`, `test:security`, `test:mass`.
-- Se creó `src/utils/validation.js` para validar login, registro, consentimiento y aportes.
-- El registro ahora exige consentimiento antes de crear cuenta.
-- Los botones y campos críticos tienen `accessibilityRole`, `accessibilityLabel` o `accessibilityState`.
-- El perfil ahora ejecuta `supabase.auth.signOut()` antes de volver al login.
-- Se eliminaron los `info.txt` residuales marcados en el reporte.
-- El SQL base de Supabase ahora evita lectura pública abierta, asigna `user_id` con `auth.uid()` y deja el bucket de audios privado.
-
-## Avance real vs. estancamiento
+## Avance real vs. Estancamiento
 Estamos avanzando si:
-- `npm run test:mass` pasa completo.
-- Un usuario puede registrarse, iniciar sesión, aportar texto/audio y cerrar sesión.
-- Supabase tiene RLS activo y las políticas nuevas aplicadas.
-- Los aportes quedan asociados al usuario autenticado.
+- `pnpm run test:mass` pasa completo.
+- Un usuario puede registrarse, iniciar sesión, aportar datos reales y cerrar sesión.
+- Supabase tiene RLS activo y los audios suben a Storage correctamente (Fase 2).
+- Los aportes quedan asociados al usuario autenticado en la base de datos de producción.
 
 Estamos estancados si:
-- Solo se cambia la interfaz sin probar flujos reales.
-- No se aplica el SQL en Supabase.
-- No se prueba en un teléfono Android real con micrófono.
-- Los audios no quedan en Storage o los aportes no llegan a la tabla `contributions`.
-- El flujo de revisión/aprobación de datos sigue siendo solo texto de maqueta.
+- Solo se cambia la interfaz sin probar flujos reales en dispositivo.
+- No se aplica el esquema actualizado en Supabase.
+- El módulo de grabación no capta audio real.
+- El flujo de revisión/aprobación de datos sigue siendo diseño sin conexión a base de datos.
 
-## Siguientes cambios recomendados
-Prioridad alta:
-- Probar en dispositivo Android real con micrófono.
-- Agregar duración mínima de audio antes de subir.
-- Crear roles reales de maestro y superadmin en Supabase.
-- Mostrar datos reales en `ExploreScreen` en vez de `MOCK_DATA`.
-
-Prioridad media:
-- Instalar Jest, Testing Library y Detox para pruebas de UI y E2E.
-- Agregar CI con GitHub Actions.
-- Migrar gradualmente a TypeScript.
-- Guardar sesión con almacenamiento seguro cuando aplique.
-
-Prioridad baja:
-- Panel completo de revisión de aportes.
-- Métricas de calidad de datos para entrenamiento de IA.
-- Caché y paginación para listas grandes.
+## Siguientes pasos inmediatos (Fase 2)
+Prioridad Alta:
+- Conectar `ExploreScreen` a Supabase para cargar palabras y frases reales.
+- Implementar y probar el módulo de grabación de audios (Lento y Normal) en dispositivo físico.
+- Integrar Supabase Storage para guardar y recuperar las grabaciones.

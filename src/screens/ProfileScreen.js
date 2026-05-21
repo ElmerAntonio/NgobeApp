@@ -19,10 +19,6 @@ export default function ProfileScreen({ navigation }) {
   const [userEmail, setUserEmail] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
   const fetchProfile = async () => {
     try {
       const {
@@ -51,6 +47,12 @@ export default function ProfileScreen({ navigation }) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+
 
   const getAvatarLetter = () => {
     if (profile?.nombre_completo) {
