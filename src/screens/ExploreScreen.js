@@ -85,7 +85,7 @@ const ContributionCard = React.memo(({ item, isPlaying, isLoadingAudio, onPlayAu
   );
 });
 
-AudioPlayer.displayName = "AudioPlayer";
+ContributionCard.displayName = 'ContributionCard';
 
 export default function ExploreScreen() {
   // Estados de datos y paginación
@@ -118,6 +118,7 @@ export default function ExploreScreen() {
       setDebouncedSearch(searchQuery);
     }, 500);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
   // Debounce para el filtro de región
@@ -126,6 +127,7 @@ export default function ExploreScreen() {
       setDebouncedRegion(regionQuery);
     }, 500);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [regionQuery]);
 
   // Limpiar recursos de audio al desmontar
@@ -169,16 +171,11 @@ export default function ExploreScreen() {
   }, [debouncedRegion]);
 
   // Resetear paginación al cambiar cualquier filtro
-  useEffect(() => {
-    // setPage(0);
 
-    // setHasMore(true);
 
-    // fetchData(0, true);
-  }, [debouncedSearch, debouncedRegion, category]);
 
   // Función para obtener datos
-  const fetchData = async (currentPage = page, reset = false) => {
+  const fetchData = useCallback(async (currentPage = page, reset = false) => {
     try {
       if (reset) {
         setLoading(true);
@@ -252,7 +249,15 @@ export default function ExploreScreen() {
       setLoading(false);
       setLoadingMore(false);
     }
-  };
+  }, [page, debouncedSearch, debouncedRegion, category, hasMore, loading, loadingMore]);
+
+  // Resetear paginación al cambiar cualquier filtro
+  useEffect(() => {
+    setPage(0);
+    setHasMore(true);
+    fetchData(0, true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, debouncedRegion, category]);
 
   const handleLoadMore = useCallback(() => {
     if (!loading && !loadingMore && hasMore) {
