@@ -80,5 +80,11 @@ El proyecto está sólidamente cimentado en sus primeras fases y actualmente se 
 *   **Corrección en ExploreScreen:** Se ha solucionado un bug crítico en `ExploreScreen.js` (corrigiendo `AudioPlayer.displayName` a `ContributionCard.displayName`) que habría causado problemas en producción.
 *   **Activación de Datos:** Se ha activado la carga de datos reales desde Supabase en `ExploreScreen`, descomentando la lógica de los filtros.
 *   **Backend:** Se ha migrado el backend para usar `pnpm` (en un workspace) en lugar de `npm`, mejorando la seguridad y consistencia de las dependencias.
+*   **Consolidación de Base de Datos:** Se ha creado `supabase/setup_complete.sql` agrupando toda la estructura, perfiles, roles (`superadmin`, `maestro`, `colaborador`), RLS y datos mock iniciales (con inserción segura en `auth.users`). Se conservan los archivos SQL parciales anteriores en el repositorio únicamente para compatibilidad con la suite de pruebas locales.
+*   **Mitigación de Vulnerabilidades y Warnings:**
+    *   Se corrigió el error de sintaxis `uuid = text` en la política de eliminación del almacenamiento de Supabase.
+    *   Se forzó el bucket `audios` a ser privado (`public = false`) resolviendo el warning de listado público (`public_bucket_allows_listing`).
+    *   Se revocó el permiso de ejecución de `public.rls_auto_enable()` para prevenir ejecuciones no autenticadas en la REST API.
+*   **Autenticación Dinámica en Backend:** Se adaptaron las rutas de Express (`contributions.js` y `users.js`) para instanciar dinámicamente el cliente de Supabase usando el JWT del usuario conectado (`Authorization: Bearer <token>`), validando las reglas RLS sin requerir llaves maestras en local.
 
-*Nota: La Fase 1 está cerrada a nivel de código. Solo faltan las pruebas físicas en Android con el micrófono para cerrar completamente la Fase 2.*
+*Nota: La Fase 1 está cerrada a nivel de código y base de datos. Solo faltan las pruebas físicas en Android con el micrófono para cerrar completamente la Fase 2.*

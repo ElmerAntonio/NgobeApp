@@ -11,6 +11,9 @@ import DashboardScreen from '../screens/DashboardScreen';
 import ContributeScreen from '../screens/ContributeScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import MyContributionsScreen from '../screens/MyContributionsScreen';
+import ApproveContributionsScreen from '../screens/ApproveContributionsScreen';
+import ApproveUsersScreen from '../screens/ApproveUsersScreen';
 
 import { theme } from '../utils/theme';
 import { useAuth } from '../context/AuthContext';
@@ -64,7 +67,12 @@ export default function AppNavigator() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {/* Renderizado condicional basado en si hay una sesión activa */}
         {session ? (
-          <Stack.Screen name="Main" component={MainTabs} />
+          <>
+            <Stack.Screen name="Main" component={MainTabs} />
+            <Stack.Screen name="MyContributions" component={MyContributionsScreen} />
+            <Stack.Screen name="ApproveContributions" component={ApproveContributionsScreen} />
+            <Stack.Screen name="ApproveUsers" component={ApproveUsersScreen} />
+          </>
         ) : (
           <>
             <Stack.Screen name="Login" component={LoginScreen} />

@@ -53,4 +53,42 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-module.exports = { authenticate };
+/**
+ * Middleware para validar que el usuario autenticado tiene uno de los roles permitidos
+ * y su estado está aprobado.
+ */
+const requireRole = (allowedRoles) => {
+  return async (req, res, next) => {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ error: 'Usuario no autenticado' });
+      }
+
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('rol, estado')
+        .eq('id', req.user.id)
+        .single();
+
+      if (error || !profile) {
+        return res.status(403).json({ error: 'Perfil de usuario no encontrado o inválido' });
+      }
+
+      if (profile.estado !== 'aprobado') {
+        return res.status(403).json({ error: 'Tu cuenta de usuario está pendiente de aprobación o bloqueada' });
+      }
+
+      if (!allowedRoles.includes(profile.rol)) {
+        return res.status(403).json({ error: 'Permisos insuficientes para realizar esta operación' });
+      }
+
+      req.userProfile = profile;
+      next();
+    } catch (err) {
+      console.error('Error al verificar rol:', err);
+      res.status(500).json({ error: 'Error interno al verificar permisos de usuario' });
+    }
+  };
+};
+
+module.exports = { authenticate, requireRole };

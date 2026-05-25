@@ -7,6 +7,7 @@ const cors = require('cors');
 // Importar rutas
 const aiRoutes = require('./routes/ai');
 const userRoutes = require('./routes/users');
+const contributionsRoutes = require('./routes/contributions');
 
 const app = express();
 
@@ -35,9 +36,20 @@ app.use(
 // Middleware para parsear JSON
 app.use(express.json());
 
+// Forzar HTTPS en producción
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(301, `https://${req.headers.host}${req.url}`);
+    }
+    next();
+  });
+}
+
 // Montar rutas
 app.use('/api', aiRoutes);
 app.use('/api/users/account', userRoutes);
+app.use('/api/contributions', contributionsRoutes);
 
 // Manejo de rutas no encontradas (404)
 app.use((req, res) => {

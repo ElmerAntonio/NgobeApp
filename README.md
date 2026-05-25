@@ -50,7 +50,7 @@ Este proyecto es de código abierto y está protegido bajo la licencia **GNU GPL
 
 ### Para desarrollo local:
 
-1. Copia `.env.example` a `.env`
+1. Copia `.env.example` a `.env` (en el directorio raíz y en el directorio `backend/`).
 2. Completa estas variables con tus valores de Supabase:
    - `EXPO_PUBLIC_SUPABASE_URL`: Tu URL de Supabase (ej: `https://xxxxx.supabase.co`)
    - `EXPO_PUBLIC_SUPABASE_ANON_KEY`: Tu ANON KEY de Supabase
@@ -61,25 +61,63 @@ Los secretos necesarios están configurados en **Settings → Secrets and variab
 - `SUPABASE_URL`: URL de tu proyecto Supabase
 - `SUPABASE_ANON_KEY`: ANON KEY de Supabase
 
+## 🗄️ Inicialización de Base de Datos (Supabase)
+
+Toda la base de datos se ha unificado en un único archivo de configuración consolidado:
+*   **`./supabase/setup_complete.sql`**: Contiene la definición de esquemas (`profiles` y `contributions`), funciones de seguridad, triggers automáticos para la creación de perfiles, políticas RLS robustas y datos mock de prueba iniciales (incluyendo usuarios de prueba en `auth.users`).
+
+> [!NOTE]
+> Los archivos SQL antiguos e individuales (`schema.sql`, `security_patch.sql`, `roles_schema.sql`, `migration_fase2.sql` y `mock_data.sql`) deben mantenerse en el proyecto para asegurar la compatibilidad con la suite de pruebas automatizadas, pero solo necesitas ejecutar `setup_complete.sql` en el SQL Editor de tu panel de Supabase para configurar la base de datos.
+
 ## 🚀 Instalación, Uso y Pruebas
 
+### 1. Clonar e Instalar
 1. Clona el repositorio.
-2. Copia `.env.example` a `.env` y completa `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
-3. Instala las dependencias usando pnpm:
+2. Instala las dependencias del monorepo usando `pnpm`:
    ```bash
    pnpm install
    ```
-4. Inicia el servidor de desarrollo Expo:
-   ```bash
-   pnpm run start
-   ```
-5. Abre la app con Expo Go, o ejecuta en tu emulador con `pnpm run android` o `pnpm run ios`.
-6. Ejecuta la batería local de pruebas:
-   ```bash
-   pnpm run test:mass
-   ```
+
+### 2. Configurar Java para Android (Windows)
+Si al ejecutar `npx expo run:android` obtienes el error `JAVA_HOME is not set`, debes indicarle a Windows dónde encontrar el compilador Java integrado de Android Studio:
+
+1. Abre el buscador de Windows y escribe **"Editar las variables de entorno del sistema"**.
+2. Haz clic en **Variables de entorno...**.
+3. En **Variables del sistema** (la sección inferior), haz clic en **Nueva...**:
+   - **Nombre:** `JAVA_HOME`
+   - **Valor:** `C:\Program Files\Android\Android Studio\jbr` (o la ruta correspondiente a tu instalación de Android Studio).
+4. Busca la variable **`Path`** en la misma sección, elígela y haz clic en **Editar...**.
+5. Haz clic en **Nuevo** y agrega: `%JAVA_HOME%\bin`.
+6. Guarda todos los cambios, cierra tu consola y abre una nueva.
+
+### 3. Levantar Servidores locales
+Abre dos terminales para iniciar los servicios:
+
+*   **Terminal 1 (Backend - API Express):**
+    ```bash
+    pnpm --filter ngobeapp-backend dev
+    ```
+*   **Terminal 2 (Frontend - Metro Bundler):**
+    ```bash
+    pnpm run start
+    ```
+
+### 4. Lanzar la App en Emulador
+Una vez que Metro Bundler esté corriendo, presiona **`a`** para compilar y ejecutar la app en tu emulador de Android Studio, o ejecuta en una nueva consola:
+```bash
+npx expo run:android
+```
 
 ## 🧪 Pruebas y Calidad de Código
 
 El proyecto utiliza el test runner nativo de Node.js y un sistema de auditoría estática.
+*   **Correr pruebas locales rápidas:**
+    ```bash
+    pnpm run test
+    ```
+*   **Correr batería de pruebas masivas y seguridad:**
+    ```bash
+    pnpm run test:mass
+    ```
+
 Puedes ver el detalle de los avances y el reporte en `PRUEBAS_Y_AVANCE.md` y `REPORTE_COMPLETO.md`.

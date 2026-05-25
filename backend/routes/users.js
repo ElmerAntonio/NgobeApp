@@ -1,25 +1,28 @@
 const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, requireRole } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Inicializamos el cliente normal de Supabase (con Anon Key)
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
-const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseKey || 'placeholder'
-);
 
-// Inicializamos el cliente de administración de Supabase (con Service Role Key)
-// IMPORTANTE: Nunca expongas SUPABASE_SERVICE_ROLE_KEY en el cliente móvil.
-// Solo debe existir en el entorno seguro del backend.
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const supabaseAdmin = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co',
-  supabaseServiceRoleKey || 'placeholder'
-);
+/**
+ * Helper to generate a Supabase client acting on behalf of the authenticated user
+ */
+const getUserSupabaseClient = (req) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1];
+  return createClient(
+    supabaseUrl || 'https://placeholder.supabase.co',
+    supabaseKey || 'placeholder',
+    {
+      global: {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      },
+    }
+  );
+};
 
 /**
  * DELETE /
@@ -33,6 +36,8 @@ router.delete('/', authenticate, async (req, res) => {
   const userId = req.user.id;
 
   try {
+    const supabase = getUserSupabaseClient(req);
+
     // 1. Obtener todas las contribuciones del usuario para extraer las URLs de los audios
     const { data: contributions, error: fetchError } = await supabase
       .from('contributions')
@@ -84,15 +89,20 @@ router.delete('/', authenticate, async (req, res) => {
       return res.status(500).json({ error: 'Error al eliminar el perfil del usuario.' });
     }
 
-    // 5. Eliminar el usuario de Supabase Auth usando el cliente Admin
-    const { error: deleteAuthError } = await supabaseAdmin.auth.admin.deleteUser(userId);
+    // 5. Eliminar el usuario de Supabase Auth usando el cliente Admin (si está disponible)
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (serviceRoleKey && serviceRoleKey !== 'placeholder') {
+      const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey);
+      const { error: deleteAuthError } = await supabaseAdmin.auth.admin.deleteUser(userId);
 
-    if (deleteAuthError) {
-      console.error('Error al eliminar usuario de Auth:', deleteAuthError);
-      return res.status(500).json({ error: 'Error al eliminar la cuenta de autenticación.' });
+      if (deleteAuthError) {
+        console.error('Error al eliminar usuario de Auth:', deleteAuthError);
+        return res.status(500).json({ error: 'Error al eliminar la cuenta de autenticación.' });
+      }
+    } else {
+      console.warn('Advertencia: SUPABASE_SERVICE_ROLE_KEY no está disponible. No se pudo eliminar la cuenta de auth del usuario.');
     }
 
-    // Retornar éxito
     res.json({
       message: 'Cuenta y datos eliminados exitosamente conforme a la Ley 81.',
     });
@@ -101,6 +111,77 @@ router.delete('/', authenticate, async (req, res) => {
     res.status(500).json({
       error: 'Error interno del servidor al procesar la solicitud de eliminación.',
     });
+  }
+});
+
+/**
+ * GET /pending-approvals
+ * Retorna perfiles de usuarios con estado = 'pendiente'.
+ * Accesible solo para superadmin.
+ */
+router.get('/pending-approvals', authenticate, requireRole(['superadmin']), async (req, res) => {
+  try {
+    const supabase = getUserSupabaseClient(req);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('estado', 'pendiente');
+
+    if (error) throw error;
+    res.json(data || []);
+  } catch (error) {
+    console.error('Error al obtener perfiles pendientes:', error);
+    res.status(500).json({ error: 'Error al obtener perfiles pendientes.' });
+  }
+});
+
+/**
+ * PUT /:id/approve-profile
+ * Aprueba a un colaborador/maestro nuevo.
+ * Accesible solo para superadmin.
+ */
+router.put('/:id/approve-profile', authenticate, requireRole(['superadmin']), async (req, res) => {
+  const { id } = req.params;
+  const { rol } = req.body;
+
+  try {
+    const supabase = getUserSupabaseClient(req);
+    const updateData = { estado: 'aprobado' };
+    if (rol) updateData.rol = rol;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update(updateData)
+      .eq('id', id);
+
+    if (error) throw error;
+    res.json({ message: 'Usuario aprobado exitosamente.' });
+  } catch (error) {
+    console.error('Error al aprobar usuario:', error);
+    res.status(500).json({ error: 'Error al aprobar perfil en la base de datos.' });
+  }
+});
+
+/**
+ * PUT /:id/block-profile
+ * Bloquea a un usuario.
+ * Accesible solo para superadmin.
+ */
+router.put('/:id/block-profile', authenticate, requireRole(['superadmin']), async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const supabase = getUserSupabaseClient(req);
+    const { error } = await supabase
+      .from('profiles')
+      .update({ estado: 'bloqueado' })
+      .eq('id', id);
+
+    if (error) throw error;
+    res.json({ message: 'Usuario bloqueado exitosamente.' });
+  } catch (error) {
+    console.error('Error al bloquear usuario:', error);
+    res.status(500).json({ error: 'Error al bloquear perfil en la base de datos.' });
   }
 });
 
