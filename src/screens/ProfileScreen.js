@@ -159,11 +159,10 @@ export default function ProfileScreen({ navigation }) {
         </View>
       </View>
 
-      <View style={styles.menuContainer}></View>
-
       <View style={styles.menuContainer}>
         <TouchableOpacity
           style={styles.menuItem}
+          onPress={() => navigation.navigate('MyContributions')}
           accessibilityRole="button"
           accessibilityLabel="Ver mis aportes"
         >
@@ -178,24 +177,29 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.menuText}>Configuración de Audio</Text>
         </TouchableOpacity>
 
-        {/* Esta sección sería solo visible si el role === 'superadmin' */}
-        {isSuperadmin && (
+        {/* Panel de revisión para Maestros y Superadmins */}
+        {(profile?.rol === 'maestro' || profile?.rol === 'superadmin') && (
           <View style={styles.adminSection}>
-            <Text style={styles.adminTitle}>Superadmin Panel</Text>
+            <Text style={styles.adminTitle}>Panel de Revisión</Text>
             <TouchableOpacity
               style={styles.menuItem}
+              onPress={() => navigation.navigate('ApproveContributions')}
               accessibilityRole="button"
-              accessibilityLabel="Aprobar usuarios nuevos"
+              accessibilityLabel="Aprobar aportes"
             >
-              <Text style={styles.menuText}>Aprobar Usuarios Nuevos</Text>
+              <Text style={styles.menuText}>Aprobar Aportes (Corpus IA)</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.menuItem}
-              accessibilityRole="button"
-              accessibilityLabel="Revisar calidad de datos para IA"
-            >
-              <Text style={styles.menuText}>Revisar Calidad de Datos (IA)</Text>
-            </TouchableOpacity>
+
+            {profile?.rol === 'superadmin' && (
+              <TouchableOpacity
+                style={styles.menuItem}
+                onPress={() => navigation.navigate('ApproveUsers')}
+                accessibilityRole="button"
+                accessibilityLabel="Aprobar usuarios nuevos"
+              >
+                <Text style={styles.menuText}>Aprobar Usuarios Nuevos</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
 

@@ -25,7 +25,7 @@ Fase 1 está casi cerrada en código, pero falta validar todo contra Supabase re
 - [x] `axios` actualizado a versión segura.
 - [x] `postcss` forzado a versión segura con `overrides`.
 - [ ] App probada de punta a punta en teléfono Android real.
-- [ ] SQL aplicado y verificado dentro del panel real de Supabase.
+- [x] SQL aplicado y verificado dentro del panel real de Supabase.
 
 ## Fase 0: Base Ya Construida
 
@@ -54,13 +54,13 @@ Fase 1 está casi cerrada en código, pero falta validar todo contra Supabase re
 - [x] Bucket de audios definido como privado en SQL.
 - [x] Políticas menos abiertas para lectura/escritura.
 - [x] Dependencias auditadas y corregidas.
-- [ ] Aplicar `supabase/schema.sql` o `supabase/security_patch.sql` en Supabase real.
-- [ ] Verificar en Supabase que RLS esté activo de verdad.
+- [x] Aplicar `supabase/setup_complete.sql` consolidado en Supabase real.
+- [x] Verificar en Supabase que RLS esté activo de verdad y los warnings mitigados.
 - [ ] Crear `AuthContext.js` para mantener sesión global.
 - [ ] Hacer que `AppNavigator` decida entre Login/Main según sesión real.
 - [ ] Proteger rutas por rol.
-- [ ] Crear roles reales: `maestro`, `colaborador`, `superadmin`.
-- [ ] Crear tabla/perfil de usuarios con rol, comunidad y estado de aprobación.
+- [x] Crear roles reales: `maestro`, `colaborador`, `superadmin`.
+- [x] Crear tabla/perfil de usuarios con rol, comunidad y estado de aprobación.
 - [ ] Bloquear usuarios no aprobados.
 - [ ] Documentar operación de Supabase para administradores.
 
@@ -205,16 +205,16 @@ Esta fase todavía no debe ser la prioridad inmediata. Primero necesitamos corpu
 
 ## Próximos 10 Pasos Recomendados
 
-1. Aplicar `supabase/security_patch.sql` en Supabase real.
-2. Ejecutar `npm run test:mass` después de aplicar cambios.
-3. Iniciar app con `npm run start`.
-4. Probar login/registro en Android real.
-5. Probar grabación lenta y natural.
-6. Confirmar en Supabase Storage que se guardan los audios.
-7. Confirmar en `contributions` que se guarda el aporte con `user_id`.
-8. Crear `AuthContext.js`.
-9. Conectar `ExploreScreen` a Supabase.
-10. Crear roles y flujo de aprobación.
+1. Aplicar `supabase/setup_complete.sql` en Supabase real (Completado).
+2. Configurar `JAVA_HOME` y compilar la app con `npx expo run:android` en el emulador (Fase actual).
+3. Registrar o Iniciar sesión usando las credenciales mock provistas (ej. `juan@ejemplo.com`).
+4. Probar el módulo de grabación de audios (lento/rápido) en la interfaz de Aportar.
+5. Verificar la correcta subida de audios al bucket de Supabase Storage.
+6. Confirmar la inserción de aportaciones con la relación `user_id` de forma correcta.
+7. Verificar que el ExploreScreen cargue y filtre de forma dinámica los datos aprobados de la base de datos.
+8. Implementar el control global de sesión (`AuthContext.js`).
+9. Crear la vista de aprobación de aportes para los roles `maestro` y `superadmin`.
+10. Validar las reglas legales de privacidad (Ley 81) antes de avanzar a la Fase 3.
 
 ## Criterio Para Decir "Fase 1 Cerrada"
 

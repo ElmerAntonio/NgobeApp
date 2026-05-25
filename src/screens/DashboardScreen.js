@@ -4,12 +4,25 @@ import { theme } from '../utils/theme';
 import NgobeTriangle from '../components/NgobeTriangle';
 
 export default function DashboardScreen() {
+  const getNgobeGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 6 && hour < 12) {
+      return { native: 'Köböre Kwen', spanish: '¡Buenos días!' };
+    } else if (hour >= 12 && hour < 18) {
+      return { native: 'Mene Kwen', spanish: '¡Buenas tardes!' };
+    } else {
+      return { native: 'De Kwen', spanish: '¡Buenas noches!' };
+    }
+  };
+
+  const greeting = getNgobeGreeting();
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text style={styles.greeting}>¡Ñagare!</Text>
-          <Text style={styles.subtitle}>Bienvenido al portal de preservación</Text>
+          <Text style={styles.greeting}>{greeting.native}</Text>
+          <Text style={styles.subtitle}>{greeting.spanish} - Bienvenido al portal de preservación</Text>
         </View>
 
         <View style={styles.statsContainer}>

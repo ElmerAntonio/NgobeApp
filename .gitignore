@@ -24,3 +24,12 @@ web-build/
 .env.local
 node_modules
 .pnpm-store
+
+# IDEs (Android Studio, WebStorm, VS Code, etc.)
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp

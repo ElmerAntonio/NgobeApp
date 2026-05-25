@@ -24,11 +24,11 @@ Basado en la arquitectura del proyecto, nos encontramos en la transición y desa
 
 ### 🚧 Fase 2 — Corpus y gestión de datos (En Progreso - FASE ACTUAL)
 *El corazón del proyecto: el diccionario Ngäbere.*
-- [ ] CRUD palabras/frases con región y variantes
-- [ ] Supabase Storage para audios
+- [ ] CRUD palabras/frases con región y variantes en frontend (backend listo)
+- [x] Supabase Storage para audios (Estructura de base de datos y políticas RLS listas)
 - [ ] Flujo aprobación (Colaborador → Maestro)
-- [ ] Búsqueda con variantes regionales
-- [ ] Módulo grabación audio (lento + rápido)
+- [ ] Búsqueda con variantes regionales en frontend (ExploreScreen ya tiene filtros avanzados)
+- [ ] Módulo grabación audio (lento + rápido) en dispositivo físico
 - [x] `ExploreScreen`: consumir datos reales de Supabase (sin mocks)
 
 ### ⏳ Fase 3 — IA conversacional Ngäbere (Pendiente)
@@ -49,9 +49,9 @@ Basado en la arquitectura del proyecto, nos encontramos en la transición y desa
 
 ## Cómo usar el programa
 1. Instala dependencias con `pnpm install` (el proyecto usa `pnpm`, no `npm`).
-2. Copia `.env.example` a `.env`.
+2. Copia `.env.example` a `.env` (en raíz y en backend/).
 3. Completa `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY`.
-4. Aplica `supabase/schema.sql` en un proyecto Supabase nuevo, o `supabase/security_patch.sql` si ya existe la base.
+4. Aplica `supabase/setup_complete.sql` en el SQL Editor de tu panel de Supabase.
 5. Inicia Expo con `pnpm run start`.
 6. Entra con una cuenta existente o regístrate aceptando privacidad y términos.
 7. Usa `Aportar` para enviar palabra, frase, cuento o canción.
