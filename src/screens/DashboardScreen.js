@@ -41,7 +41,7 @@ export default function DashboardScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Últimas Actividades</Text>
           <View style={styles.activityItem}>
-            <Text style={styles.activityText}>Agregaste la palabra "Kri" (Árbol)</Text>
+            <Text style={styles.activityText}>Agregaste la palabra {"\""}Kri{"\""} (Árbol)</Text>
             <Text style={styles.activityDate}>Hoy, 10:30 AM</Text>
           </View>
           <View style={styles.activityItem}>

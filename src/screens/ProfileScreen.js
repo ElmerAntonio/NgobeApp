@@ -49,7 +49,10 @@ export default function ProfileScreen({ navigation }) {
   };
 
   useEffect(() => {
-    fetchProfile();
+    const loadProfile = async () => {
+      await fetchProfile();
+    };
+    loadProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

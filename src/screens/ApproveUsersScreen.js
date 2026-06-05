@@ -43,7 +43,10 @@ export default function ApproveUsersScreen({ navigation }) {
   };
 
   useEffect(() => {
-    fetchPendingUsers();
+    const loadUsers = async () => {
+      await fetchPendingUsers();
+    };
+    loadUsers();
   }, []);
 
   const handleApproveUser = async (id, chosenRole) => {

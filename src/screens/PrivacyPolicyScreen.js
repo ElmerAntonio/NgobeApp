@@ -51,8 +51,8 @@ export default function PrivacyPolicyScreen({ navigation }) {
         {/* TODO: Actualizar la entidad responsable antes del lanzamiento oficial */}
         <Text style={styles.paragraph}>
           Esta Política de Privacidad regula el tratamiento de datos personales realizado por
-          Proyecto NgobeApp, ubicado en la República de Panamá, en adelante el "Responsable del
-          Tratamiento". El presente documento se enmarca dentro de las disposiciones de la Ley 81 de
+          Proyecto NgobeApp, ubicado en la República de Panamá, en adelante el {"\""}Responsable del
+          Tratamiento{"\""}. El presente documento se enmarca dentro de las disposiciones de la Ley 81 de
           2019 de Protección de Datos Personales de la República de Panamá.
         </Text>
 
