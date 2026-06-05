@@ -46,7 +46,7 @@ test('core app files are present', () => {
 test('README documents setup and testing commands', () => {
   const readme = fs.readFileSync(path.join(root, 'README.md'), 'utf8');
 
-  assert.match(readme, /npm install/);
-  assert.match(readme, /npm run start/);
-  assert.match(readme, /npm run test:mass/);
+  assert.match(readme, /pnpm install/);
+  assert.match(readme, /pnpm run start/);
+  assert.match(readme, /pnpm run test:mass/);
 });
