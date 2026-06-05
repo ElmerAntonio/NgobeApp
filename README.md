@@ -78,20 +78,30 @@ Toda la base de datos se ha unificado en un único archivo de configuración con
    pnpm install
    ```
 
-### 2. Configurar Java para Android (Windows)
-Si al ejecutar `npx expo run:android` obtienes el error `JAVA_HOME is not set`, debes indicarle a Windows dónde encontrar el compilador Java integrado de Android Studio:
+### 2. Configurar Entorno de Compilación de Android (Windows)
+Para compilar la aplicación nativamente en tu emulador de Android Studio:
 
-1. Abre el buscador de Windows y escribe **"Editar las variables de entorno del sistema"**.
-2. Haz clic en **Variables de entorno...**.
-3. En **Variables del sistema** (la sección inferior), haz clic en **Nueva...**:
-   - **Nombre:** `JAVA_HOME`
-   - **Valor:** `C:\Program Files\Android\Android Studio\jbr` (o la ruta correspondiente a tu instalación de Android Studio).
-4. Busca la variable **`Path`** en la misma sección, elígela y haz clic en **Editar...**.
-5. Haz clic en **Nuevo** y agrega: `%JAVA_HOME%\bin`.
-6. Guarda todos los cambios, cierra tu consola y abre una nueva.
+1. **Configurar `JAVA_HOME`:**
+   Si al compilar obtienes el error `JAVA_HOME is not set`, indica a Windows dónde encontrar el compilador Java integrado de Android Studio:
+   - Abre el buscador de Windows y selecciona **"Editar las variables de entorno del sistema"**.
+   - Haz clic en **Variables de entorno...**.
+   - En **Variables del sistema** (sección inferior), haz clic en **Nueva...**:
+     - **Nombre:** `JAVA_HOME`
+     - **Valor:** `C:\Program Files\Android\Android Studio\jbr`
+   - Busca la variable **`Path`**, haz clic en **Editar...**, presiona **Nuevo** y agrega: `%JAVA_HOME%\bin`.
+   - Guarda todos los cambios.
+
+2. **Configurar el Android SDK:**
+   La primera vez que compiles, se creará el archivo `./android/local.properties`. Asegúrate de que apunte a la ruta de instalación de tu SDK de Android. Por ejemplo:
+   ```properties
+   sdk.dir=C\:\\Users\\TU_USUARIO\\AppData\\Local\\Android\\Sdk
+   ```
+
+3. **Versión de Gradle:**
+   El proyecto está configurado para compilar con la versión **Gradle 8.13** (definida en `./android/gradle/wrapper/gradle-wrapper.properties`). Se configuró un tiempo de espera extendido (`networkTimeout=120000`) para evitar cancelaciones por timeouts de red al descargar las herramientas nativas.
 
 ### 3. Levantar Servidores locales
-Abre dos terminales para iniciar los servicios:
+Abre dos terminales e inicia los servicios del monorepo:
 
 *   **Terminal 1 (Backend - API Express):**
     ```bash
@@ -102,11 +112,24 @@ Abre dos terminales para iniciar los servicios:
     pnpm run start
     ```
 
-### 4. Lanzar la App en Emulador
-Una vez que Metro Bundler esté corriendo, presiona **`a`** para compilar y ejecutar la app en tu emulador de Android Studio, o ejecuta en una nueva consola:
+### 4. Lanzar la App en Emulador o Dispositivo Físico
+
+#### Opción A: Desde la Consola (Terminal)
+Una vez que Metro Bundler esté corriendo, ejecuta en una nueva consola:
 ```bash
 npx expo run:android
 ```
+Esto compilará el código nativo e instalará la aplicación directamente en tu emulador abierto.
+
+#### Opción B: Desde la Interfaz de Android Studio
+Sí, puedes compilar, depurar y ejecutar las pruebas de la app directamente usando la interfaz gráfica de Android Studio:
+1. Abre **Android Studio**.
+2. Selecciona **Open** (Abrir) y elige la carpeta **`./android`** de este repositorio.
+3. Espera a que Android Studio indexe el proyecto y compile el sistema usando el Gradle wrapper `8.13` que configuramos.
+4. Conecta tu teléfono por USB (con depuración activa) o inicia un emulador desde el *Device Manager*.
+5. Presiona el botón verde de **"Run"** (o `Shift + F10`) en Android Studio para instalar la app en el dispositivo.
+6. **Importante:** Deja corriendo la consola de Metro Bundler (`pnpm run start`) en segundo plano para que la aplicación móvil pueda cargar el código JavaScript en caliente.
+7. Una vez abierta la app, puedes interactuar con el micrófono del dispositivo, registrar usuarios, hacer aportes y monitorear la depuración con **Logcat** en Android Studio.
 
 ## 🧪 Pruebas y Calidad de Código
 

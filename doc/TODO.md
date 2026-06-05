@@ -18,13 +18,14 @@ Fase 1 está casi cerrada en código, pero falta validar todo contra Supabase re
 
 ## Verificación Actual
 
-- [x] `npm install` ejecutado.
-- [x] `npm run test:mass` corre.
-- [x] 20 pruebas automatizadas pasan.
-- [x] `npm audit` queda en 0 vulnerabilidades después de actualizar dependencias.
+- [x] `pnpm install` ejecutado.
+- [x] `pnpm run test:mass` corre.
+- [x] 23 pruebas automatizadas pasan.
+- [x] `pnpm audit` queda en 0 vulnerabilidades después de configurar los overrides de monorepo.
 - [x] `axios` actualizado a versión segura.
-- [x] `postcss` forzado a versión segura con `overrides`.
-- [ ] App probada de punta a punta en teléfono Android real.
+- [x] `postcss` y `uuid` forzados a versiones seguras con `overrides`.
+- [ ] App probada de punta a punta en emulador de Android Studio o teléfono real.
+- [x] Gradle Wrapper 8.13 y Android SDK en local.properties configurados con éxito.
 - [x] SQL aplicado y verificado dentro del panel real de Supabase.
 
 ## Fase 0: Base Ya Construida
@@ -206,8 +207,8 @@ Esta fase todavía no debe ser la prioridad inmediata. Primero necesitamos corpu
 ## Próximos 10 Pasos Recomendados
 
 1. Aplicar `supabase/setup_complete.sql` en Supabase real (Completado).
-2. Configurar `JAVA_HOME` y compilar la app con `npx expo run:android` en el emulador (Fase actual).
-3. Registrar o Iniciar sesión usando las credenciales mock provistas (ej. `juan@ejemplo.com`).
+2. Configurar `JAVA_HOME`, Android SDK y compilar con Gradle 8.13 (Completado).
+3. Registrar o Iniciar sesión usando las credenciales mock provistas (ej. `juan@ejemplo.com`) (Fase actual).
 4. Probar el módulo de grabación de audios (lento/rápido) en la interfaz de Aportar.
 5. Verificar la correcta subida de audios al bucket de Supabase Storage.
 6. Confirmar la inserción de aportaciones con la relación `user_id` de forma correcta.
