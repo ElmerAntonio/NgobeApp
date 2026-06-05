@@ -81,6 +81,7 @@ Esta es la fase donde estamos entrando ahora. Es el corazón del proyecto: recol
 - [x] `ExploreScreen` creado con lista usando `FlatList`.
 - [ ] Probar aporte real en teléfono Android con micrófono.
 - [ ] Confirmar que los audios suben a Supabase Storage.
+- [ ] Confirmar que los audios suben a Supabase Storage.
 - [ ] Confirmar que los aportes quedan ligados al `user_id`.
 - [ ] Conectar `ExploreScreen` a datos reales de Supabase.
 - [ ] Eliminar `MOCK_DATA` de `ExploreScreen`.

@@ -83,7 +83,7 @@ El proyecto está sólidamente cimentado en sus primeras fases y actualmente se 
 *   **Consolidación de Base de Datos:** Se ha creado `supabase/setup_complete.sql` agrupando toda la estructura, perfiles, roles (`superadmin`, `maestro`, `colaborador`), RLS y datos mock iniciales (con inserción segura en `auth.users`). Se conservan los archivos SQL parciales anteriores en el repositorio únicamente para compatibilidad con la suite de pruebas locales.
 *   **Alineación del Entorno de Compilación Nativo de Android:**
     *   Se degradó el Gradle Wrapper desde la versión `9.0.0` (incompatible con plugins de React Native) a la versión **`8.13`** (mínimo requerido por las herramientas de compilación de Android), solucionando el error del Toolchain `JvmVendorSpec` de IBM Semeru.
-    *   Se aumentó el tiempo de espera de descarga de Gradle a 120 segundos (`networkTimeout=120000`) para evitar errores de Socket Timeout durante descargas lentas.
+    *   Se aumentó el tiempo de espera de descarga de Gradle a 120 segundos (`networkTimeout=120000`) para evitar cancelaciones por timeouts de red al descargar las herramientas nativas.
     *   Se automatizó el enlace del Android SDK creando un archivo `local.properties` local en la carpeta `android/` para apuntar a la ruta del SDK instalada por Android Studio.
 *   **Corrección de Validación de Nombre de Paquete:** Se renombró el `"name"` en `package.json` de `"NgobeApp"` a `"ngobeapp"` en minúsculas para eliminar las advertencias del editor sobre las normas de nomenclatura de NPM.
 *   **Mitigación de Vulnerabilidades y Corrección de Overrides:**
