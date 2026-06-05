@@ -52,7 +52,10 @@ export default function MyContributionsScreen({ navigation }) {
   };
 
   useEffect(() => {
-    fetchMyContributions();
+    const loadContributions = async () => {
+      await fetchMyContributions();
+    };
+    loadContributions();
   }, []);
 
   const onRefresh = () => {

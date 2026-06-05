@@ -59,7 +59,10 @@ export default function ApproveContributionsScreen({ navigation }) {
   };
 
   useEffect(() => {
-    fetchPending();
+    const loadData = async () => {
+      await fetchPending();
+    };
+    loadData();
     return () => {
       if (sound) {
         sound.unloadAsync();

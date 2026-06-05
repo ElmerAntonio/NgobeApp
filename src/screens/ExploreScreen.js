@@ -21,26 +21,26 @@ const LOAD_MORE_LIMIT = 10;
 
 // Animación Shimmer para el Skeleton Loader
 const SkeletonCard = () => {
-  const shimmerValue = useRef(new Animated.Value(0));
+  const shimmerValue = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
     Animated.loop(
       Animated.sequence([
-        Animated.timing(shimmerValue.current, {
+        Animated.timing(shimmerValue, {
           toValue: 1,
           duration: 1000,
           useNativeDriver: false,
         }),
-        Animated.timing(shimmerValue.current, {
+        Animated.timing(shimmerValue, {
           toValue: 0,
           duration: 1000,
           useNativeDriver: false,
         }),
       ])
     ).start();
-  }, [shimmerValue.current]);
+  }, [shimmerValue]);
 
-  const backgroundColor = shimmerValue.current.interpolate({
+  const backgroundColor = shimmerValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['#E0E0E0', '#F5F5F5'],
   });
@@ -253,9 +253,12 @@ export default function ExploreScreen() {
 
   // Resetear paginación al cambiar cualquier filtro
   useEffect(() => {
-    setPage(0);
-    setHasMore(true);
-    fetchData(0, true);
+    const handleFilterChange = async () => {
+      setPage(0);
+      setHasMore(true);
+      await fetchData(0, true);
+    };
+    handleFilterChange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedSearch, debouncedRegion, category]);
 
