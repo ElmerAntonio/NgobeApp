@@ -79,61 +79,90 @@ Toda la base de datos se ha unificado en un único archivo de configuración con
    ```
 
 ### 2. Configurar Entorno de Compilación de Android (Windows)
-Para compilar la aplicación nativamente en tu emulador de Android Studio:
+Para poder compilar la aplicación nativamente en tu emulador de Android Studio:
 
-1. **Configurar `JAVA_HOME`:**
-   Si al compilar obtienes el error `JAVA_HOME is not set`, indica a Windows dónde encontrar el compilador Java integrado de Android Studio:
-   - Abre el buscador de Windows y selecciona **"Editar las variables de entorno del sistema"**.
-   - Haz clic en **Variables de entorno...**.
-   - En **Variables del sistema** (sección inferior), haz clic en **Nueva...**:
-     - **Nombre:** `JAVA_HOME`
-     - **Valor:** `C:\Program Files\Android\Android Studio\jbr`
-   - Busca la variable **`Path`**, haz clic en **Editar...**, presiona **Nuevo** y agrega: `%JAVA_HOME%\bin`.
-   - Guarda todos los cambios.
+1. **Configurar las Variables de Entorno en Windows:**
+   Es indispensable que configures las siguientes variables de entorno del sistema:
+   *   **`JAVA_HOME`**: Debe apuntar al JDK interno de Android Studio:
+       *   **Ruta estándar:** `C:\Program Files\Android\Android Studio\jbr`
+   *   **`ANDROID_HOME`**: Debe apuntar al SDK de Android:
+       *   **Ruta estándar:** `C:\Users\TU_USUARIO\AppData\Local\Android\Sdk`
+   *   **Agregar al `Path`**: Edita la variable `Path` del sistema y añade:
+       *   `%ANDROID_HOME%\platform-tools`
+       *   `%ANDROID_HOME%\emulator`
+       *   `%JAVA_HOME%\bin`
 
-2. **Configurar el Android SDK:**
-   La primera vez que compiles, se creará el archivo `./android/local.properties`. Asegúrate de que apunte a la ruta de instalación de tu SDK de Android. Por ejemplo:
+2. **Configurar el Android SDK en el proyecto:**
+   Asegúrate de tener el archivo `./android/local.properties` apuntando a tu ruta de SDK:
    ```properties
    sdk.dir=C\:\\Users\\TU_USUARIO\\AppData\\Local\\Android\\Sdk
    ```
 
-3. **Versión de Gradle:**
-   El proyecto está configurado para compilar con la versión **Gradle 8.13** (definida en `./android/gradle/wrapper/gradle-wrapper.properties`). Se configuró un tiempo de espera extendido (`networkTimeout=120000`) para evitar cancelaciones por timeouts de red al descargar las herramientas nativas.
+---
 
-### 3. Levantar Servidores locales
-Abre dos terminales e inicia los servicios del monorepo:
+## 💻 Guía de Inicio del Programa
 
-*   **Terminal 1 (Backend - API Express):**
-    ```bash
-    pnpm --filter ngobeapp-backend dev
-    ```
-*   **Terminal 2 (Frontend - Metro Bundler):**
-    ```bash
-    pnpm run start
-    ```
+Sigue estos pasos en orden para iniciar la aplicación:
 
-### 4. Lanzar la App en Emulador o Dispositivo Físico
-
-#### Opción A: Desde la Consola (Terminal)
-Una vez que Metro Bundler esté corriendo, ejecuta en una nueva consola:
-```bash
-npx expo run:android
+### Paso 1: Iniciar el Emulador de Android
+Abre PowerShell y arranca el dispositivo virtual usando la ruta directa del emulador:
+```powershell
+& "C:\Users\Elmer\AppData\Local\Android\Sdk\emulator\emulator.exe" -avd Pixel_10_Pro_Fold
 ```
-Esto compilará el código nativo e instalará la aplicación directamente en tu emulador abierto.
 
-#### Opción B: Desde la Interfaz de Android Studio
-Sí, puedes compilar, depurar y ejecutar las pruebas de la app directamente usando la interfaz gráfica de Android Studio:
-1. Abre **Android Studio**.
-2. Selecciona **Open** (Abrir) y elige la carpeta **`./android`** de este repositorio.
-3. Espera a que Android Studio indexe el proyecto y compile el sistema usando el Gradle wrapper `8.13` que configuramos.
-4. Conecta tu teléfono por USB (con depuración activa) o inicia un emulador desde el *Device Manager*.
-5. Presiona el botón verde de **"Run"** (o `Shift + F10`) en Android Studio para instalar la app en el dispositivo.
-6. **Importante:** Deja corriendo la consola de Metro Bundler (`pnpm run start`) en segundo plano para que la aplicación móvil pueda cargar el código JavaScript en caliente.
-7. Una vez abierta la app, puedes interactuar con el micrófono del dispositivo, registrar usuarios, hacer aportes y monitorear la depuración con **Logcat** en Android Studio.
+### Paso 2: Levantar el Servidor de Metro Bundler (Frontend)
+En una nueva terminal de PowerShell (dentro de `C:\NgobeApp`), inicia el servidor de desarrollo limpiando la caché para evitar conflictos con archivos compilados anteriormente:
+```powershell
+# Usando npx de Node directamente (en caso de rutas globales corruptas en tu PC)
+node "C:\Program Files\nodejs\node_modules\npm\bin\npx-cli.js" expo start -c
+```
+
+### Paso 3: Instalar y Correr la App en el Emulador
+Una vez que Metro Bundler esté corriendo, puedes presionar la tecla **`a`** en la terminal de Metro, o ejecutar el siguiente comando en otra terminal para compilar e instalar el código nativo directamente:
+```powershell
+# Compila, instala y lanza la app en el emulador activo
+node "C:\Program Files\nodejs\node_modules\npm\bin\npx-cli.js" expo run:android
+```
+
+---
+
+## 🛠️ Solución de Problemas Comunes (Troubleshooting)
+
+Durante el desarrollo y configuración en Windows se solucionaron varios inconvenientes críticos. Si te encuentras con alguno, aquí tienes la solución:
+
+### 1. Error de compilación C++ nativa (Ninja `manifest 'build.ninja' still dirty`)
+*   **Causa:** En Windows, el límite de longitud de rutas (`MAX_PATH` de 250 caracteres) choca con las rutas profundas creadas por `pnpm` para archivos nativos.
+*   **Solución aplicada:** 
+    *   Configuramos `virtual-store-dir-max-length=40` en `.npmrc` para acortar directorios.
+    *   Añadimos un bloque de reubicación en `android/build.gradle` que mueve dinámicamente las carpetas de compilación `.cxx` de los subproyectos a `android/.cxx/` en la raíz (una ruta plana y corta).
+
+### 2. Error en Pantalla: `Property 'require' doesn't exist` o `Property 'MessageQueue' doesn't exist`
+*   **Causa:** Mismatch en los presets de Babel. Se estaba utilizando un preset genérico de React Native en lugar de `babel-preset-expo`, o una versión incorrecta (v57) incompatible con el SDK de tu app (v55).
+*   **Solución aplicada:** Se instaló la versión correcta de la dependencia: `babel-preset-expo@~55.0.21` y se configuró en `babel.config.js`.
+*   **Qué hacer:** Detén Metro con `Ctrl + C` e inícialo de nuevo limpiando caché: `node "C:\Program Files\nodejs\node_modules\npm\bin\npx-cli.js" expo start -c`.
+
+### 3. Error en Pantalla: `Cannot find native module 'ExponentAV'`
+*   **Causa:** La versión instalada de la aplicación en el emulador no contiene el código nativo de la librería de audio/video (`expo-av`).
+*   **Solución:** Debes forzar la reinstalación del APK nativo corriendo:
+    ```powershell
+    node "C:\Program Files\nodejs\node_modules\npm\bin\npx-cli.js" expo run:android
+    ```
+    Si la app no se refresca, fuerza el cierre desde la terminal usando ADB:
+    ```powershell
+    adb shell am force-stop com.anonymous.ngobeapp
+    adb shell am start -n com.anonymous.ngobeapp/.MainActivity
+    ```
+
+### 4. Error de Red: `TypeError: Network request failed` al Registrarse/Ingresar
+*   **Causa:** El servidor de base de datos de **Supabase** ha pausado tu proyecto gratuito por inactividad, por lo que el subdominio DNS no responde en internet.
+*   **Solución:** 
+    1. Entra a tu panel en [supabase.com](https://supabase.com).
+    2. Selecciona tu proyecto y haz clic en **"Restore Project"** (Restaurar proyecto) para reactivarlo.
+    3. Si creas un proyecto nuevo, recuerda actualizar las variables `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_ANON_KEY` en el archivo `.env` de la raíz.
+
+---
 
 ## 🧪 Pruebas y Calidad de Código
-
-El proyecto utiliza el test runner nativo de Node.js y un sistema de auditoría estática.
 *   **Correr pruebas locales rápidas:**
     ```bash
     pnpm run test
@@ -144,3 +173,4 @@ El proyecto utiliza el test runner nativo de Node.js y un sistema de auditoría 
     ```
 
 Puedes ver el detalle de los avances y el reporte en `PRUEBAS_Y_AVANCE.md` y `REPORTE_COMPLETO.md`.
+

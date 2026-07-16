@@ -41,6 +41,11 @@ CREATE TABLE IF NOT EXISTS public.contributions (
 
 ALTER TABLE public.contributions ENABLE ROW LEVEL SECURITY;
 
+-- Índices de rendimiento para acelerar búsquedas, filtrado y ordenamiento de aportes
+CREATE INDEX IF NOT EXISTS idx_contributions_status_created_at ON public.contributions (status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_contributions_region ON public.contributions (region);
+CREATE INDEX IF NOT EXISTS idx_contributions_user_id ON public.contributions (user_id);
+
 -- --------------------------------------------------------
 -- 3. FUNCIONES DE SEGURIDAD Y DE CONTROL (SECURITY DEFINER)
 -- --------------------------------------------------------

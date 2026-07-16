@@ -94,6 +94,9 @@ importers:
         specifier: ^10.3.0
         version: 10.3.0
     devDependencies:
+      babel-preset-expo:
+        specifier: ^55.0.21
+        version: 55.0.21(@babel/core@7.29.0)(@babel/runtime@7.29.2)(expo@55.0.24)(react-refresh@0.14.2)
       eslint:
         specifier: ^8.57.1
         version: 8.57.1
