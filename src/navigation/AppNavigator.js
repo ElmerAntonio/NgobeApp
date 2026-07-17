@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ActivityIndicator, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import LoginScreen from '../screens/LoginScreen';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
@@ -21,16 +22,35 @@ import { useAuth } from '../context/AuthContext';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
+const TAB_ICONS = {
+  Inicio: { active: 'home', inactive: 'home-outline' },
+  Aportar: { active: 'add-circle', inactive: 'add-circle-outline' },
+  Explorar: { active: 'search', inactive: 'search-outline' },
+  Perfil: { active: 'person', inactive: 'person-outline' },
+};
+
 // Módulo principal con tabs
 function MainTabs() {
   return (
     <Tab.Navigator
-      screenOptions={{
+      screenOptions={({ route }) => ({
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textSecondary,
         tabBarStyle: {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,
+          height: 60,
+          paddingBottom: 8,
+          paddingTop: 6,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '600',
+        },
+        tabBarIcon: ({ focused, color, size }) => {
+          const icons = TAB_ICONS[route.name];
+          const iconName = focused ? icons.active : icons.inactive;
+          return <Ionicons name={iconName} size={size} color={color} />;
         },
         headerStyle: {
           backgroundColor: theme.colors.primary,
@@ -39,7 +59,7 @@ function MainTabs() {
         headerTitleStyle: {
           fontWeight: 'bold',
         },
-      }}
+      })}
     >
       <Tab.Screen name="Inicio" component={DashboardScreen} />
       <Tab.Screen name="Aportar" component={ContributeScreen} />
