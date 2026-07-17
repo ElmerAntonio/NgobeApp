@@ -25,3 +25,17 @@ allprojects {
 
 apply plugin: "expo-root-project"
 apply plugin: "com.facebook.react.rootproject"
+
+subprojects {
+    if (project.projectDir.absolutePath.contains("node_modules")) {
+        plugins.withId('com.android.library') {
+            project.android.externalNativeBuild.cmake {
+                buildStagingDirectory = new File(rootProject.projectDir, ".cxx/${project.name}")
+            }
+        }
+    }
+}
+
+
+
+

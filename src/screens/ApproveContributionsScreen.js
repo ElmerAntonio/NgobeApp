@@ -87,8 +87,11 @@ export default function ApproveContributionsScreen({ navigation }) {
       setLoadingAudio(true);
       let audioUrl = url;
       if (!url.startsWith('http')) {
-        const { data } = supabase.storage.from('audios').getPublicUrl(url);
-        audioUrl = data.publicUrl;
+        const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+          .from('audios')
+          .createSignedUrl(url, 60);
+        if (signedUrlError) throw signedUrlError;
+        audioUrl = signedUrlData.signedUrl;
       }
 
       const { sound: newSound } = await Audio.Sound.createAsync(

@@ -310,8 +310,11 @@ export default function ExploreScreen() {
         // Si url es solo el path (e.g. 'contributions/audio.m4a'):
         let audioUrl = url;
         if (!url.startsWith('http')) {
-          const { data: publicUrlData } = supabase.storage.from('audios').getPublicUrl(url);
-          audioUrl = publicUrlData.publicUrl;
+          const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+            .from('audios')
+            .createSignedUrl(url, 60);
+          if (signedUrlError) throw signedUrlError;
+          audioUrl = signedUrlData.signedUrl;
         }
 
         const { sound: newSound } = await Audio.Sound.createAsync(

@@ -107,9 +107,10 @@ Abre dos terminales e inicia los servicios del monorepo:
     ```bash
     pnpm --filter ngobeapp-backend dev
     ```
-*   **Terminal 2 (Frontend - Metro Bundler):**
-    ```bash
-    pnpm run start
+    Si la app no se refresca, fuerza el cierre desde la terminal usando ADB:
+    ```powershell
+    adb shell am force-stop com.anonymous.ngobeapp
+    adb shell am start -n com.anonymous.ngobeapp/.MainActivity
     ```
 
 ### 4. Lanzar la App en Emulador o Dispositivo Físico
@@ -131,9 +132,9 @@ Sí, puedes compilar, depurar y ejecutar las pruebas de la app directamente usan
 6. **Importante:** Deja corriendo la consola de Metro Bundler (`pnpm run start`) en segundo plano para que la aplicación móvil pueda cargar el código JavaScript en caliente.
 7. Una vez abierta la app, puedes interactuar con el micrófono del dispositivo, registrar usuarios, hacer aportes y monitorear la depuración con **Logcat** en Android Studio.
 
-## 🧪 Pruebas y Calidad de Código
+---
 
-El proyecto utiliza el test runner nativo de Node.js y un sistema de auditoría estática.
+## 🧪 Pruebas y Calidad de Código
 *   **Correr pruebas locales rápidas:**
     ```bash
     pnpm run test
@@ -144,3 +145,4 @@ El proyecto utiliza el test runner nativo de Node.js y un sistema de auditoría 
     ```
 
 Puedes ver el detalle de los avances y el reporte en `PRUEBAS_Y_AVANCE.md` y `REPORTE_COMPLETO.md`.
+

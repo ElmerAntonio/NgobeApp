@@ -22,8 +22,20 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.anonymous.ngobeapp"
+      "package": "com.anonymous.ngobeapp",
+      "permissions": [
+        "RECORD_AUDIO",
+        "MODIFY_AUDIO_SETTINGS"
+      ]
     },
+    "plugins": [
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Permite a NgobeApp usar el micrófono para grabar la pronunciación de las palabras."
+        }
+      ]
+    ],
     "web": {
       "favicon": "./assets/favicon.png"
     }
