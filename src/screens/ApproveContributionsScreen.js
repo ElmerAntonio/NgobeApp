@@ -12,9 +12,11 @@ import {
   ScrollView,
 } from 'react-native';
 import { Audio } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../services/supabaseClient';
 import { getApiUrl } from '../services/api';
 import { theme } from '../utils/theme';
+import ScreenHeader from '../components/ScreenHeader';
 
 export default function ApproveContributionsScreen({ navigation }) {
   const [pendingList, setPendingList] = useState([]);
@@ -223,13 +225,11 @@ export default function ApproveContributionsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.backText}>← Volver</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Aprobación de Aportes</Text>
-        <Text style={styles.subtitle}>Panel para Maestros y Administradores de la Comarca</Text>
-      </View>
+      <ScreenHeader
+        title="Aprobación de Aportes"
+        subtitle="Panel para Maestros y Administradores de la Comarca"
+        onBack={() => navigation.goBack()}
+      />
 
       {loading ? (
         <View style={styles.centerContainer}>
@@ -270,8 +270,13 @@ export default function ApproveContributionsScreen({ navigation }) {
                       onPress={() => handlePlayAudio(selectedItem.audio_lento_url, 'lento')}
                       disabled={loadingAudio}
                     >
+                      <Ionicons
+                        name={playingType === 'lento' ? 'pause' : 'play'}
+                        size={14}
+                        color={theme.colors.primary}
+                      />
                       <Text style={styles.audioButtonText}>
-                        {playingType === 'lento' ? '⏸ Detener Lento' : '▶ Reproducir Lento'}
+                        {playingType === 'lento' ? 'Detener Lento' : 'Reproducir Lento'}
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -281,8 +286,13 @@ export default function ApproveContributionsScreen({ navigation }) {
                       onPress={() => handlePlayAudio(selectedItem.audio_rapido_url, 'rapido')}
                       disabled={loadingAudio}
                     >
+                      <Ionicons
+                        name={playingType === 'rapido' ? 'pause' : 'play'}
+                        size={14}
+                        color={theme.colors.primary}
+                      />
                       <Text style={styles.audioButtonText}>
-                        {playingType === 'rapido' ? '⏸ Detener Natural' : '▶ Reproducir Natural'}
+                        {playingType === 'rapido' ? 'Detener Natural' : 'Reproducir Natural'}
                       </Text>
                     </TouchableOpacity>
                   )}
@@ -380,28 +390,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-  },
-  header: {
-    padding: theme.spacing.m,
-    backgroundColor: theme.colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  backButton: {
-    marginBottom: theme.spacing.s,
-  },
-  backText: {
-    color: theme.colors.primary,
-    fontWeight: 'bold',
-  },
-  title: {
-    ...theme.typography.header,
-    color: theme.colors.primary,
-  },
-  subtitle: {
-    ...theme.typography.body,
-    color: theme.colors.textSecondary,
-    fontSize: 12,
   },
   content: {
     flex: 1,
@@ -507,12 +495,15 @@ const styles = StyleSheet.create({
   },
   audioButton: {
     flex: 1,
+    flexDirection: 'row',
     backgroundColor: '#E8F5E9',
     paddingVertical: 10,
     paddingHorizontal: 8,
     borderRadius: 6,
     marginRight: 6,
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
     borderWidth: 1,
     borderColor: theme.colors.primary,
   },

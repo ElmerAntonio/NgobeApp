@@ -11,11 +11,13 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../services/supabaseClient';
 import { theme } from '../utils/theme';
 import { validateAuthForm } from '../utils/validation';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NgobeTriangle from '../components/NgobeTriangle';
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -23,6 +25,7 @@ export default function LoginScreen({ navigation }) {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -91,31 +94,53 @@ export default function LoginScreen({ navigation }) {
         style={styles.content}
       >
         <View style={styles.headerContainer}>
+          <View style={styles.logoBadge}>
+            <NgobeTriangle color={theme.colors.accent} size={26} />
+          </View>
           <Text style={styles.title}>NgöbeApp</Text>
           <Text style={styles.subtitle}>Preservando nuestras raíces</Text>
         </View>
 
         <View style={styles.formContainer}>
           <Text style={styles.label}>Correo Electrónico</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="maestro@comarca.pa"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            accessibilityLabel="Correo electrónico"
-          />
+          <View style={styles.inputWrapper}>
+            <Ionicons name="mail-outline" size={18} color={theme.colors.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="maestro@comarca.pa"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              accessibilityLabel="Correo electrónico"
+            />
+          </View>
 
           <Text style={styles.label}>Contraseña</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="••••••••"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            accessibilityLabel="Contraseña"
-          />
+          <View style={styles.inputWrapper}>
+            <Ionicons name="lock-closed-outline" size={18} color={theme.colors.textSecondary} style={styles.inputIcon} />
+            <TextInput
+              style={[styles.input, styles.inputWithTrailingIcon]}
+              placeholder="••••••••"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry={!showPassword}
+              accessibilityLabel="Contraseña"
+            />
+            <TouchableOpacity
+              style={styles.trailingIconButton}
+              onPress={() => setShowPassword((prev) => !prev)}
+              accessibilityRole="button"
+              accessibilityLabel={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <Ionicons
+                name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                size={18}
+                color={theme.colors.textSecondary}
+              />
+            </TouchableOpacity>
+          </View>
 
           {!isLogin && (
             <View style={styles.consentRow}>
@@ -149,7 +174,15 @@ export default function LoginScreen({ navigation }) {
             {isLoading ? (
               <ActivityIndicator color={theme.colors.surface} />
             ) : (
-              <Text style={styles.buttonText}>{isLogin ? 'Ingresar' : 'Registrarse'}</Text>
+              <>
+                <Ionicons
+                  name={isLogin ? 'log-in-outline' : 'person-add-outline'}
+                  size={18}
+                  color={theme.colors.surface}
+                  style={styles.buttonIcon}
+                />
+                <Text style={styles.buttonText}>{isLogin ? 'Ingresar' : 'Registrarse'}</Text>
+              </>
             )}
           </TouchableOpacity>
 
@@ -188,6 +221,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: theme.spacing.xxl,
   },
+  logoBadge: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: theme.colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: theme.spacing.m,
+    ...theme.shadows.medium,
+  },
   title: {
     ...theme.typography.header,
     fontSize: 36,
@@ -214,22 +257,43 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.xs,
     fontWeight: '600',
   },
+  inputWrapper: {
+    position: 'relative',
+    justifyContent: 'center',
+    marginBottom: theme.spacing.m,
+  },
+  inputIcon: {
+    position: 'absolute',
+    left: 14,
+    zIndex: 1,
+  },
   input: {
     height: 50,
     borderWidth: 1,
     borderColor: theme.colors.border,
     borderRadius: theme.borders.radius,
     paddingHorizontal: theme.spacing.m,
-    marginBottom: theme.spacing.m,
+    paddingLeft: 40,
     backgroundColor: '#FAFAFA',
   },
+  inputWithTrailingIcon: {
+    paddingRight: 40,
+  },
+  trailingIconButton: {
+    position: 'absolute',
+    right: 14,
+  },
   button: {
+    flexDirection: 'row',
     backgroundColor: theme.colors.primary,
     height: 50,
     borderRadius: theme.borders.radius,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: theme.spacing.s,
+  },
+  buttonIcon: {
+    marginRight: theme.spacing.s,
   },
   buttonText: {
     color: theme.colors.surface,

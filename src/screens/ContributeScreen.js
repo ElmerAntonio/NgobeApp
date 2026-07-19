@@ -11,9 +11,17 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Audio } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../utils/theme';
 import { supabase } from '../services/supabaseClient';
 import { CONTRIBUTION_CATEGORIES, validateContribution } from '../utils/validation';
+
+const CATEGORY_ICONS = {
+  Palabra: 'text-outline',
+  Frase: 'chatbubble-ellipses-outline',
+  Cuento: 'book-outline',
+  Canción: 'musical-notes-outline',
+};
 
 export default function ContributeScreen() {
   const [category, setCategory] = useState('Palabra');
@@ -219,6 +227,12 @@ export default function ContributeScreen() {
                 accessibilityState={{ selected: category === cat }}
                 accessibilityLabel={`Categoría ${cat}`}
               >
+                <Ionicons
+                  name={CATEGORY_ICONS[cat]}
+                  size={14}
+                  color={category === cat ? theme.colors.surface : theme.colors.primary}
+                  style={styles.catBtnIcon}
+                />
                 <Text style={[styles.catBtnText, category === cat && styles.catBtnTextActive]}>
                   {cat}
                 </Text>
@@ -266,8 +280,13 @@ export default function ContributeScreen() {
               accessibilityRole="button"
               accessibilityLabel="Mantener presionado para grabar audio lento"
             >
+              <Ionicons
+                name={recordings.lento ? 'checkmark-circle' : 'mic'}
+                size={16}
+                color={recordings.lento ? theme.colors.success : theme.colors.primary}
+              />
               <Text style={styles.audioBtnText}>
-                {recordings.lento ? '✅ Lento Grabado' : '🎙️ Mantén para Lento'}
+                {recordings.lento ? 'Lento Grabado' : 'Mantén para Lento'}
               </Text>
             </TouchableOpacity>
 
@@ -278,8 +297,13 @@ export default function ContributeScreen() {
               accessibilityRole="button"
               accessibilityLabel="Mantener presionado para grabar audio natural"
             >
+              <Ionicons
+                name={recordings.rapido ? 'checkmark-circle' : 'mic'}
+                size={16}
+                color={recordings.rapido ? theme.colors.success : theme.colors.primary}
+              />
               <Text style={styles.audioBtnText}>
-                {recordings.rapido ? '✅ Rápido Grabado' : '🎙️ Mantén para Natural'}
+                {recordings.rapido ? 'Rápido Grabado' : 'Mantén para Natural'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -350,15 +374,21 @@ const styles = StyleSheet.create({
   },
   categoryRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: theme.spacing.xs,
     marginTop: theme.spacing.xs,
   },
   catBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: theme.spacing.xs,
     paddingHorizontal: theme.spacing.s,
     borderRadius: 20,
     borderWidth: 1,
     borderColor: theme.colors.primary,
+  },
+  catBtnIcon: {
+    marginRight: 4,
   },
   catBtnActive: {
     backgroundColor: theme.colors.primary,
@@ -377,6 +407,9 @@ const styles = StyleSheet.create({
   },
   audioBtn: {
     flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 6,
     backgroundColor: '#E8F5E9',
     padding: theme.spacing.m,
     borderRadius: theme.borders.radius,

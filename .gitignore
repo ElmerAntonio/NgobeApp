@@ -22,8 +22,13 @@ web-build/
 .env
 .env.*
 .env.local
+!.env.example
+!backend/.env.example
 node_modules
 .pnpm-store
+
+# Estado local del CLI de Supabase (no debe subirse al repo)
+supabase/.temp/
 
 # IDEs (Android Studio, WebStorm, VS Code, etc.)
 .idea/

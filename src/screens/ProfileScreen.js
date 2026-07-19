@@ -9,9 +9,31 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useState, useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../utils/theme';
 import { supabase } from '../services/supabaseClient';
 import { deleteUserAccount } from '../services/userService';
+
+const STATUS_ICON_COLORS = {
+  aprobado: '#2E7D32',
+  pendiente: '#F57F17',
+  bloqueado: '#D32F2F',
+};
+
+function MenuItem({ icon, iconColor, label, onPress, style, textStyle }) {
+  return (
+    <TouchableOpacity
+      style={[styles.menuItem, style]}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+    >
+      <Ionicons name={icon} size={18} color={iconColor || theme.colors.primary} style={styles.menuIcon} />
+      <Text style={[styles.menuText, textStyle]}>{label}</Text>
+      <Ionicons name="chevron-forward" size={16} color={theme.colors.textSecondary} />
+    </TouchableOpacity>
+  );
+}
 
 export default function ProfileScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
@@ -156,6 +178,18 @@ export default function ProfileScreen({ navigation }) {
         </Text>
 
         <View style={[styles.statusBadge, styles[`status_${status}`]]}>
+          <Ionicons
+            name={
+              status === 'aprobado'
+                ? 'checkmark-circle'
+                : status === 'bloqueado'
+                ? 'close-circle'
+                : 'time'
+            }
+            size={12}
+            color={STATUS_ICON_COLORS[status] || STATUS_ICON_COLORS.pendiente}
+            style={styles.statusIcon}
+          />
           <Text style={[styles.statusText, styles[`statusText_${status}`]]}>
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </Text>
@@ -163,45 +197,30 @@ export default function ProfileScreen({ navigation }) {
       </View>
 
       <View style={styles.menuContainer}>
-        <TouchableOpacity
-          style={styles.menuItem}
+        <MenuItem
+          icon="albums-outline"
+          label="Mis Aportes"
           onPress={() => navigation.navigate('MyContributions')}
-          accessibilityRole="button"
-          accessibilityLabel="Ver mis aportes"
-        >
-          <Text style={styles.menuText}>Mis Aportes</Text>
-        </TouchableOpacity>
+        />
 
-        <TouchableOpacity
-          style={styles.menuItem}
-          accessibilityRole="button"
-          accessibilityLabel="Configurar audio"
-        >
-          <Text style={styles.menuText}>Configuración de Audio</Text>
-        </TouchableOpacity>
+        <MenuItem icon="options-outline" label="Configuración de Audio" onPress={() => {}} />
 
         {/* Panel de revisión para Maestros y Superadmins */}
         {(profile?.rol === 'maestro' || profile?.rol === 'superadmin') && (
           <View style={styles.adminSection}>
             <Text style={styles.adminTitle}>Panel de Revisión</Text>
-            <TouchableOpacity
-              style={styles.menuItem}
+            <MenuItem
+              icon="checkmark-done-outline"
+              label="Aprobar Aportes (Corpus IA)"
               onPress={() => navigation.navigate('ApproveContributions')}
-              accessibilityRole="button"
-              accessibilityLabel="Aprobar aportes"
-            >
-              <Text style={styles.menuText}>Aprobar Aportes (Corpus IA)</Text>
-            </TouchableOpacity>
+            />
 
             {profile?.rol === 'superadmin' && (
-              <TouchableOpacity
-                style={styles.menuItem}
+              <MenuItem
+                icon="people-outline"
+                label="Aprobar Usuarios Nuevos"
                 onPress={() => navigation.navigate('ApproveUsers')}
-                accessibilityRole="button"
-                accessibilityLabel="Aprobar usuarios nuevos"
-              >
-                <Text style={styles.menuText}>Aprobar Usuarios Nuevos</Text>
-              </TouchableOpacity>
+              />
             )}
           </View>
         )}
@@ -212,6 +231,7 @@ export default function ProfileScreen({ navigation }) {
           accessibilityRole="button"
           accessibilityLabel="Cerrar sesión"
         >
+          <Ionicons name="log-out-outline" size={18} color={theme.colors.error} style={styles.menuIcon} />
           <Text style={styles.logoutText}>Cerrar Sesión</Text>
         </TouchableOpacity>
 
@@ -222,6 +242,7 @@ export default function ProfileScreen({ navigation }) {
           accessibilityRole="button"
           accessibilityLabel="Eliminar mi cuenta y todos mis datos"
         >
+          <Ionicons name="trash-outline" size={18} color={theme.colors.surface} style={styles.menuIcon} />
           <Text style={styles.deleteText}>Eliminar mi cuenta y todos mis datos</Text>
         </TouchableOpacity>
       </View>
@@ -235,10 +256,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: theme.spacing.s,
     paddingHorizontal: theme.spacing.m,
     paddingVertical: 4,
-    borderRadius: 12,
+    borderRadius: theme.borders.radiusPill,
+  },
+  statusIcon: {
+    marginRight: 4,
   },
   status_aprobado: {
     backgroundColor: '#E8F5E9',
@@ -283,6 +309,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: theme.spacing.m,
+    borderWidth: 3,
+    borderColor: theme.colors.accent,
   },
   avatarText: {
     fontSize: 32,
@@ -303,19 +331,21 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.m,
   },
   menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: theme.colors.surface,
     padding: theme.spacing.m,
-    borderRadius: theme.borders.radius,
+    borderRadius: theme.borders.radiusLarge,
     marginBottom: theme.spacing.s,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 1,
-    elevation: 1,
+    ...theme.shadows.small,
+  },
+  menuIcon: {
+    marginRight: theme.spacing.s,
   },
   menuText: {
     ...theme.typography.body,
     fontWeight: '500',
+    flex: 1,
   },
   adminSection: {
     marginTop: theme.spacing.l,
@@ -335,6 +365,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFEBEE',
     borderWidth: 1,
     borderColor: theme.colors.error,
+    justifyContent: 'center',
   },
   logoutText: {
     color: theme.colors.error,
@@ -346,6 +377,7 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.s,
     backgroundColor: '#D32F2F',
     borderWidth: 0,
+    justifyContent: 'center',
   },
   deleteText: {
     color: theme.colors.surface,

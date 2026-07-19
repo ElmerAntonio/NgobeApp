@@ -12,6 +12,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { Audio } from 'expo-av';
+import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../services/supabaseClient';
 import { theme } from '../utils/theme';
 
@@ -77,7 +78,12 @@ const ContributionCard = React.memo(({ item, isPlaying, isLoadingAudio, onPlayAu
           {isLoadingAudio ? (
             <ActivityIndicator size="small" color={theme.colors.primary} />
           ) : (
-            <Text style={styles.audioIcon}>{isPlaying ? '⏸' : '▶'}</Text>
+            <Ionicons
+              name={isPlaying ? 'pause' : 'play'}
+              size={14}
+              color={theme.colors.primary}
+              style={isPlaying ? undefined : styles.audioIconPlay}
+            />
           )}
         </TouchableOpacity>
       )}
@@ -392,12 +398,15 @@ export default function ExploreScreen() {
         <Text style={styles.title}>Diccionario y Conocimiento</Text>
 
         {/* Barra de Búsqueda Principal */}
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Buscar por palabra o frase..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
+        <View style={styles.searchInputWrapper}>
+          <Ionicons name="search" size={18} color={theme.colors.textSecondary} style={styles.searchIcon} />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar por palabra o frase..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
 
         {/* Filtro por Categoría */}
         <View style={styles.categoryContainer}>
@@ -418,6 +427,7 @@ export default function ExploreScreen() {
 
         {/* Filtro por Región */}
         <View style={styles.regionContainer}>
+          <Ionicons name="location-outline" size={16} color={theme.colors.textSecondary} style={styles.regionIcon} />
           <TextInput
             style={styles.regionInput}
             placeholder="Buscar por región..."
@@ -438,7 +448,7 @@ export default function ExploreScreen() {
                 setShowSuggestions(false);
               }}
             >
-              <Text style={styles.clearRegionText}>X</Text>
+              <Ionicons name="close" size={13} color="#333" />
             </TouchableOpacity>
           )}
           {/* Sugerencias de Región */}
@@ -496,13 +506,23 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     marginBottom: theme.spacing.m,
   },
+  searchInputWrapper: {
+    position: 'relative',
+    justifyContent: 'center',
+    marginBottom: theme.spacing.m,
+  },
+  searchIcon: {
+    position: 'absolute',
+    left: 12,
+    zIndex: 1,
+  },
   searchInput: {
     backgroundColor: theme.colors.surface,
     padding: theme.spacing.s,
+    paddingLeft: 40,
     borderRadius: theme.borders.radius,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    marginBottom: theme.spacing.m,
   },
   categoryContainer: {
     marginBottom: theme.spacing.m,
@@ -528,10 +548,17 @@ const styles = StyleSheet.create({
   },
   regionContainer: {
     position: 'relative',
+    justifyContent: 'center',
+  },
+  regionIcon: {
+    position: 'absolute',
+    left: 12,
+    zIndex: 1,
   },
   regionInput: {
     backgroundColor: theme.colors.surface,
     padding: theme.spacing.s,
+    paddingLeft: 36,
     borderRadius: theme.borders.radius,
     borderWidth: 1,
     borderColor: theme.colors.border,
@@ -642,9 +669,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.colors.primary,
   },
-  audioIcon: {
-    fontSize: 12,
-    color: theme.colors.primary,
+  audioIconPlay: {
+    marginLeft: 2,
   },
   skeletonTag: {
     width: 60,

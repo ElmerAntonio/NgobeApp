@@ -9,9 +9,11 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../services/supabaseClient';
 import { getApiUrl } from '../services/api';
 import { theme } from '../utils/theme';
+import ScreenHeader from '../components/ScreenHeader';
 
 export default function MyContributionsScreen({ navigation }) {
   const [contributions, setContributions] = useState([]);
@@ -85,17 +87,50 @@ export default function MyContributionsScreen({ navigation }) {
     }
   };
 
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'approved':
+        return 'checkmark-circle';
+      case 'rejected':
+        return 'close-circle';
+      default:
+        return 'time';
+    }
+  };
+
+  const getStatusIconColor = (status) => {
+    switch (status) {
+      case 'approved':
+        return theme.colors.success;
+      case 'rejected':
+        return theme.colors.error;
+      default:
+        return theme.colors.warning;
+    }
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <Text style={styles.categoryTag}>{item.category}</Text>
         <View style={[styles.statusBadge, getStatusStyle(item.status)]}>
+          <Ionicons
+            name={getStatusIcon(item.status)}
+            size={13}
+            color={getStatusIconColor(item.status)}
+            style={styles.statusIcon}
+          />
           <Text style={styles.statusText}>{translateStatus(item.status)}</Text>
         </View>
       </View>
       <Text style={styles.ngobeText}>{item.ngobe_text}</Text>
       <Text style={styles.spanishText}>{item.spanish_text}</Text>
-      {item.region && <Text style={styles.regionText}>📍 Región: {item.region}</Text>}
+      {item.region && (
+        <View style={styles.regionRow}>
+          <Ionicons name="location-outline" size={12} color={theme.colors.textSecondary} />
+          <Text style={styles.regionText}>Región: {item.region}</Text>
+        </View>
+      )}
       {item.status === 'approved' && item.transcripcion_fonetica && (
         <View style={styles.phoneticContainer}>
           <Text style={styles.phoneticLabel}>Transcripción Fonética:</Text>
@@ -107,13 +142,11 @@ export default function MyContributionsScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.backText}>← Volver</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Mis Aportes</Text>
-        <Text style={styles.subtitle}>Historial de tus contribuciones culturales y lingüísticas</Text>
-      </View>
+      <ScreenHeader
+        title="Mis Aportes"
+        subtitle="Historial de tus contribuciones culturales y lingüísticas"
+        onBack={() => navigation.goBack()}
+      />
 
       {loading ? (
         <View style={styles.centerContainer}>
@@ -154,43 +187,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
-  header: {
-    padding: theme.spacing.m,
-    backgroundColor: theme.colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  backButton: {
-    marginBottom: theme.spacing.s,
-  },
-  backText: {
-    color: theme.colors.primary,
-    fontWeight: 'bold',
-  },
-  title: {
-    ...theme.typography.header,
-    color: theme.colors.primary,
-  },
-  subtitle: {
-    ...theme.typography.body,
-    color: theme.colors.textSecondary,
-    fontSize: 13,
-  },
   list: {
     padding: theme.spacing.m,
   },
   card: {
     backgroundColor: theme.colors.surface,
     padding: theme.spacing.m,
-    borderRadius: theme.borders.radius,
+    borderRadius: theme.borders.radiusLarge,
     marginBottom: theme.spacing.m,
     borderLeftWidth: 5,
     borderLeftColor: theme.colors.primary,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    ...theme.shadows.small,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -208,9 +215,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 3,
-    borderRadius: 12,
+    borderRadius: theme.borders.radiusPill,
+  },
+  statusIcon: {
+    marginRight: 4,
   },
   statusApproved: {
     backgroundColor: '#E8F5E9',
@@ -237,7 +249,12 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
     marginBottom: 8,
   },
+  regionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   regionText: {
+    marginLeft: 4,
     fontSize: 12,
     color: theme.colors.textSecondary,
     fontStyle: 'italic',

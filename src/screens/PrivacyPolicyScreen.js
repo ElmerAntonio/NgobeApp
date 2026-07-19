@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../utils/theme';
 
 export default function PrivacyPolicyScreen({ navigation }) {
@@ -42,7 +43,10 @@ export default function PrivacyPolicyScreen({ navigation }) {
         scrollEventThrottle={16} // Necesario para que onScroll se dispare con suficiente frecuencia
         contentContainerStyle={styles.scrollContent}
       >
-        <Text style={styles.title}>Política de Privacidad y Tratamiento de Datos Personales</Text>
+        <View style={styles.titleRow}>
+          <Ionicons name="shield-checkmark-outline" size={22} color={theme.colors.primary} />
+          <Text style={styles.title}>Política de Privacidad y Tratamiento de Datos Personales</Text>
+        </View>
 
         {/* TODO: Actualizar la fecha de entrada en vigor antes del lanzamiento oficial */}
         <Text style={styles.date}>Fecha de entrada en vigor: [FECHA_DE_LANZAMIENTO]</Text>
@@ -153,6 +157,7 @@ export default function PrivacyPolicyScreen({ navigation }) {
             accessibilityRole="button"
             accessibilityLabel="Acepto la política de privacidad"
           >
+            <Ionicons name="checkmark" size={18} color={theme.colors.surface} style={styles.acceptIcon} />
             <Text style={styles.acceptButtonText}>Acepto</Text>
           </TouchableOpacity>
         </View>
@@ -173,11 +178,17 @@ const styles = StyleSheet.create({
     padding: theme.spacing.xl,
     paddingBottom: theme.spacing.xxl * 2, // Espacio extra para que el botón no tape el texto
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: theme.spacing.s,
+    marginBottom: theme.spacing.m,
+  },
   title: {
     ...theme.typography.header,
     fontSize: 24,
     color: theme.colors.primary,
-    marginBottom: theme.spacing.m,
+    flex: 1,
   },
   date: {
     ...theme.typography.caption,
@@ -226,10 +237,15 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   acceptButton: {
+    flexDirection: 'row',
     backgroundColor: theme.colors.primary,
     padding: theme.spacing.m,
     borderRadius: theme.borders.radius,
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  acceptIcon: {
+    marginRight: theme.spacing.xs,
   },
   acceptButtonText: {
     color: theme.colors.surface,

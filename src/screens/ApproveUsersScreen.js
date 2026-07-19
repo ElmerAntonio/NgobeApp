@@ -9,9 +9,11 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../services/supabaseClient';
 import { getApiUrl } from '../services/api';
 import { theme } from '../utils/theme';
+import ScreenHeader from '../components/ScreenHeader';
 
 export default function ApproveUsersScreen({ navigation }) {
   const [users, setUsers] = useState([]);
@@ -135,6 +137,7 @@ export default function ApproveUsersScreen({ navigation }) {
             style={styles.blockBtn}
             onPress={() => handleBlockUser(item.id)}
           >
+            <Ionicons name="ban-outline" size={13} color={theme.colors.error} />
             <Text style={styles.blockText}>Bloquear</Text>
           </TouchableOpacity>
 
@@ -142,14 +145,16 @@ export default function ApproveUsersScreen({ navigation }) {
             style={[styles.approveBtn, styles.colabColor]}
             onPress={() => handleApproveUser(item.id, 'colaborador')}
           >
-            <Text style={styles.approveBtnText}>Aprobar Colaborador</Text>
+            <Ionicons name="checkmark" size={13} color={theme.colors.primary} />
+            <Text style={styles.approveBtnText}>Colaborador</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.approveBtn, styles.maestroColor]}
             onPress={() => handleApproveUser(item.id, 'maestro')}
           >
-            <Text style={styles.approveBtnText}>Aprobar Maestro</Text>
+            <Ionicons name="school-outline" size={13} color="#000" />
+            <Text style={styles.approveBtnText}>Maestro</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -158,13 +163,11 @@ export default function ApproveUsersScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.backText}>← Volver</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Aprobar Usuarios</Text>
-        <Text style={styles.subtitle}>Panel Administrativo para Gestión y Activación de Cuentas</Text>
-      </View>
+      <ScreenHeader
+        title="Aprobar Usuarios"
+        subtitle="Panel Administrativo para Gestión y Activación de Cuentas"
+        onBack={() => navigation.goBack()}
+      />
 
       {loading ? (
         <View style={styles.centerContainer}>
@@ -192,43 +195,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background,
   },
-  header: {
-    padding: theme.spacing.m,
-    backgroundColor: theme.colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  backButton: {
-    marginBottom: theme.spacing.s,
-  },
-  backText: {
-    color: theme.colors.primary,
-    fontWeight: 'bold',
-  },
-  title: {
-    ...theme.typography.header,
-    color: theme.colors.primary,
-  },
-  subtitle: {
-    ...theme.typography.body,
-    color: theme.colors.textSecondary,
-    fontSize: 12,
-  },
   list: {
     padding: theme.spacing.m,
   },
   card: {
     backgroundColor: theme.colors.surface,
     padding: theme.spacing.m,
-    borderRadius: theme.borders.radius,
+    borderRadius: theme.borders.radiusLarge,
     marginBottom: theme.spacing.m,
     borderLeftWidth: 5,
     borderLeftColor: theme.colors.accent,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    ...theme.shadows.small,
   },
   cardHeader: {
     marginBottom: theme.spacing.s,
@@ -259,10 +236,13 @@ const styles = StyleSheet.create({
   },
   blockBtn: {
     flex: 1,
+    flexDirection: 'row',
     backgroundColor: '#FFEBEE',
     paddingVertical: 10,
     borderRadius: 6,
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
     marginRight: 6,
     borderWidth: 1,
     borderColor: theme.colors.error,
@@ -274,9 +254,12 @@ const styles = StyleSheet.create({
   },
   approveBtn: {
     flex: 1.5,
+    flexDirection: 'row',
     paddingVertical: 10,
     borderRadius: 6,
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
     marginRight: 6,
   },
   colabColor: {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../utils/theme';
 import NgobeTriangle from '../components/NgobeTriangle';
 
@@ -41,12 +42,22 @@ export default function DashboardScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Últimas Actividades</Text>
           <View style={styles.activityItem}>
-            <Text style={styles.activityText}>Agregaste la palabra {"\""}Kri{"\""} (Árbol)</Text>
-            <Text style={styles.activityDate}>Hoy, 10:30 AM</Text>
+            <View style={styles.activityIconWrap}>
+              <Ionicons name="create-outline" size={16} color={theme.colors.primary} />
+            </View>
+            <View style={styles.activityBody}>
+              <Text style={styles.activityText}>Agregaste la palabra {"\""}Kri{"\""} (Árbol)</Text>
+              <Text style={styles.activityDate}>Hoy, 10:30 AM</Text>
+            </View>
           </View>
           <View style={styles.activityItem}>
-            <Text style={styles.activityText}>Subiste un cuento en dialecto Nedrini</Text>
-            <Text style={styles.activityDate}>Ayer, 4:15 PM</Text>
+            <View style={styles.activityIconWrap}>
+              <Ionicons name="book-outline" size={16} color={theme.colors.secondary} />
+            </View>
+            <View style={styles.activityBody}>
+              <Text style={styles.activityText}>Subiste un cuento en dialecto Nedrini</Text>
+              <Text style={styles.activityDate}>Ayer, 4:15 PM</Text>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -63,17 +74,27 @@ const styles = StyleSheet.create({
     padding: theme.spacing.m,
   },
   header: {
-    marginVertical: theme.spacing.l,
+    marginHorizontal: -theme.spacing.m,
+    marginTop: -theme.spacing.m,
+    marginBottom: theme.spacing.l,
+    paddingHorizontal: theme.spacing.m,
+    paddingTop: theme.spacing.xl,
+    paddingBottom: theme.spacing.xl,
     alignItems: 'center',
+    backgroundColor: theme.colors.primary,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
   },
   greeting: {
     ...theme.typography.header,
-    color: theme.colors.primary,
+    color: theme.colors.textOnPrimary,
   },
   subtitle: {
     ...theme.typography.body,
-    color: theme.colors.textSecondary,
+    color: theme.colors.textOnPrimary,
+    opacity: 0.85,
     marginTop: theme.spacing.xs,
+    textAlign: 'center',
   },
   statsContainer: {
     flexDirection: 'row',
@@ -85,13 +106,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: theme.spacing.xs,
     padding: theme.spacing.m,
-    borderRadius: theme.borders.radius,
+    borderRadius: theme.borders.radiusLarge,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    ...theme.shadows.small,
   },
   icon: {
     marginBottom: theme.spacing.s,
@@ -113,12 +130,26 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.m,
   },
   activityItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: theme.colors.surface,
     padding: theme.spacing.m,
-    borderRadius: theme.borders.radius,
+    borderRadius: theme.borders.radiusLarge,
     marginBottom: theme.spacing.s,
     borderLeftWidth: 4,
     borderLeftColor: theme.colors.secondary,
+  },
+  activityIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: theme.colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: theme.spacing.s,
+  },
+  activityBody: {
+    flex: 1,
   },
   activityText: {
     ...theme.typography.body,
